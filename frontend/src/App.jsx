@@ -1,91 +1,202 @@
-import { useState, useEffect, useMemo } from 'react'
-
-import MetricCards        from './components/MetricCards.jsx'
-import TrendChart         from './components/TrendChart.jsx'
-import DistributionChart  from './components/DistributionChart.jsx'
-import ActivityLog        from './components/ActivityLog.jsx'
-import ScanModal          from './components/ScanModal.jsx'
-import ThreatIntel        from './components/ThreatIntel.jsx'
+import { useState } from 'react'
+import StatChart from './StatChart.jsx'
 
 const API_URL = 'http://localhost:5001'
 
-// ── Security Glimpse — aggregated advisory stats ──────────────────────────────
-function SecurityGlimpse({ scans }) {
-  const stats = useMemo(() => {
-    if (!scans.length) return null
+function ResultBadge({ result }) {
+  const isPhishing = result === 'Phishing'
+  return (
+    <span className={`badge ${isPhishing ? 'badge-phishing' : 'badge-legitimate'}`}>
+      {isPhishing ? '🚨 Phishing' : '✅ Legitimate'}
+    </span>
+  )
+}
 
-    let highCount = 0, medCount = 0, lowCount = 0
-    const attackFreq = {}
+function RiskMeter({ score }) {
+  const pct = Math.min(100, Math.max(0, score))
+  const level = pct >= 70 ? 'high' : pct >= 40 ? 'medium' : 'low'
+  const label = pct >= 70 ? 'High Risk' : pct >= 40 ? 'Moderate Risk' : 'Low Risk'
+  const color = pct >= 70 ? '#ef4444' : pct >= 40 ? '#f59e0b' : '#10b981'
 
-    scans.forEach(s => {
-      const sev = s.highest_severity
-      if (sev === 'High')   highCount++
-      else if (sev === 'Medium') medCount++
-      else if (sev === 'Low')    lowCount++
+  // Arc parameters
+  const r = 60, cx = 90, cy = 80
+  const startAngle = -180, totalAngle = 180
+  const toRad = d => (d * Math.PI) / 180
+  const arcX = (a) => cx + r * Math.cos(toRad(a))
+  const arcY = (a) => cy + r * Math.sin(toRad(a))
+  const endAngle = startAngle + (totalAngle * pct) / 100
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0
 
-      ;(s.security_analysis ?? []).forEach(e => {
-        e.possible_attacks.forEach(atk => {
-          attackFreq[atk] = (attackFreq[atk] ?? 0) + 1
-        })
-      })
-    })
-
-    const topAttack = Object.entries(attackFreq)
-      .sort((a, b) => b[1] - a[1])[0]
-
-    const threats = scans.filter(s => s.status === 'Phishing' || s.status === 'Suspicious').length
-
-    return { highCount, medCount, lowCount, topAttack, threats }
-  }, [scans])
-
-  if (!stats) return null
+  const trackPath = `M ${arcX(startAngle)} ${arcY(startAngle)} A ${r} ${r} 0 1 1 ${arcX(startAngle + totalAngle - 0.01)} ${arcY(startAngle + totalAngle - 0.01)}`
+  const fillPath = pct > 0
+    ? `M ${arcX(startAngle)} ${arcY(startAngle)} A ${r} ${r} 0 ${largeArc} 1 ${arcX(endAngle)} ${arcY(endAngle)}`
+    : ''
 
   return (
-    <div className="glimpse-grid">
-      <div className="glimpse-card gc-red">
-        <div className="glimpse-val">{stats.threats}</div>
-        <div className="glimpse-label">Threats Detected</div>
-        <div className="glimpse-icon">🚨</div>
-      </div>
-      <div className="glimpse-card gc-orange">
-        <div className="glimpse-val">{stats.highCount}</div>
-        <div className="glimpse-label">High Severity Alerts</div>
-        <div className="glimpse-icon">🔴</div>
-      </div>
-      <div className="glimpse-card gc-yellow">
-        <div className="glimpse-val">{stats.medCount}</div>
-        <div className="glimpse-label">Medium Severity</div>
-        <div className="glimpse-icon">🟡</div>
-      </div>
-      <div className="glimpse-card gc-blue">
-        <div className="glimpse-val">{stats.topAttack ? stats.topAttack[0] : '—'}</div>
-        <div className="glimpse-label">
-          Most Common Attack{stats.topAttack ? ` (${stats.topAttack[1]}×)` : ''}
+    <div className="risk-meter">
+      <div className="risk-meter-inner">
+        <svg viewBox="0 0 180 90" className="risk-arc">
+          <defs>
+            <linearGradient id="riskGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={pct >= 70 ? '#7f1d1d' : pct >= 40 ? '#78350f' : '#064e3b'} />
+              <stop offset="100%" stopColor={color} />
+            </linearGradient>
+          </defs>
+          <path d={trackPath} fill="none" stroke="#1a2540" strokeWidth="10" strokeLinecap="round" />
+          {fillPath && (
+            <path d={fillPath} fill="none" stroke="url(#riskGrad)" strokeWidth="10" strokeLinecap="round" />
+          )}
+          <text x={cx} y={cy - 4} textAnchor="middle" fill={color} fontSize="20" fontWeight="700" fontFamily="Inter, sans-serif">
+            {pct}%
+          </text>
+          <text x={cx} y={cy + 14} textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="Inter, sans-serif">
+            PHISHING RISK
+          </text>
+        </svg>
+
+        <div className="risk-scale">
+          <span className="scale-low">Low</span>
+          <span className="scale-mid">Medium</span>
+          <span className="scale-high">High</span>
         </div>
-        <div className="glimpse-icon">🎯</div>
+
+        <span className={`risk-label-chip risk-${level}`}>{label}</span>
       </div>
     </div>
   )
 }
 
-// ── URL Scanner card ──────────────────────────────────────────────────────────
-function Scanner({ onResult }) {
-  const [url, setUrl]       = useState('')
+function FeatureBreakdown({ breakdown, riskScore }) {
+  const maxImportance = Math.max(...breakdown.map(f => f.importance))
+  const structuralFeatures = breakdown.filter(f => f.type === 'structural')
+  const statisticalFeatures = breakdown.filter(f => f.type === 'statistical')
+  const triggeredCount = structuralFeatures.filter(f => f.value === 1).length
+
+  return (
+    <div className="breakdown">
+
+      {/* ── Structural ── */}
+      <div className="breakdown-section">
+        <div className="section-header">
+          <div className="section-header-left">
+            <span className="section-icon">🔒</span>
+            <div>
+              <div className="section-title">Structural Features</div>
+              <div className="section-hint">Binary flags — detected from URL structure</div>
+            </div>
+          </div>
+          <div className={`struct-summary ${triggeredCount > 0 ? 'summary-warn' : 'summary-ok'}`}>
+            <span className="summary-num">{triggeredCount}</span>
+            <span className="summary-label">/ {structuralFeatures.length} flagged</span>
+          </div>
+        </div>
+
+        <table className="feat-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Status</th>
+              <th>Model Importance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {structuralFeatures.map(f => {
+              const triggered = f.value === 1
+              const pct = ((f.importance / maxImportance) * 100).toFixed(0)
+              return (
+                <tr key={f.key} className={triggered ? 'row-flagged' : ''}>
+                  <td className="feat-name">{f.label}</td>
+                  <td>
+                    <span className={`status-chip ${triggered ? 'chip-danger' : 'chip-safe'}`}>
+                      {triggered ? '⚠ Detected' : '✓ Clear'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="imp-cell">
+                      <div className="imp-track">
+                        <div
+                          className={`imp-fill ${triggered ? 'imp-fill-danger' : 'imp-fill-normal'}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="imp-pct">{(f.importance * 100).toFixed(1)}%</span>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── Statistical ── */}
+      <div className="breakdown-section">
+        <div className="section-header">
+          <div className="section-header-left">
+            <span className="section-icon">📊</span>
+            <div>
+              <div className="section-title">Statistical Features</div>
+              <div className="section-hint">Numeric values extracted from the URL</div>
+            </div>
+          </div>
+        </div>
+        <StatChart features={statisticalFeatures} />
+      </div>
+
+      {/* ── Risk Score ── */}
+      <div className="breakdown-footer">
+        <div className="risk-footer-row">
+          <div className="risk-footer-left">
+            <div className="risk-footer-title">Overall Phishing Risk Score</div>
+            <div className="risk-footer-sub">Confidence from Random Forest model · based on {breakdown.length} features</div>
+          </div>
+        </div>
+        <RiskMeter score={riskScore} />
+        <div className="imp-note">Importance % = feature's relative weight in the model decision</div>
+      </div>
+    </div>
+  )
+}
+
+function ResultItem({ item }) {
+  const [open, setOpen] = useState(false)
+  const isPhishing = item.result === 'Phishing'
+
+  return (
+    <li className={`result-item ${isPhishing ? 'item-phishing' : 'item-legitimate'}`}>
+      <div className="result-top">
+        <span className="result-url">{item.url}</span>
+        <div className="result-actions">
+          <ResultBadge result={item.result} />
+          <button className="details-btn" onClick={() => setOpen(o => !o)}>
+            {open ? 'Hide Details ▲' : 'Show Details ▼'}
+          </button>
+        </div>
+      </div>
+      {open && item.breakdown && <FeatureBreakdown breakdown={item.breakdown} riskScore={item.risk_score} />}
+    </li>
+  )
+}
+
+export default function App() {
+  const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError]   = useState('')
+  const [error, setError] = useState('')
+  const [history, setHistory] = useState([])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
     const trimmed = url.trim()
-    if (!trimmed)                                      { setError('Please enter a URL.'); return }
+    if (!trimmed) { setError('Please enter a URL.'); return }
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
       setError("URL must start with 'http://' or 'https://'"); return
     }
 
     setLoading(true)
     try {
-      const res  = await fetch(`${API_URL}/predict`, {
+      const res = await fetch(`${API_URL}/classify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: trimmed }),
@@ -94,179 +205,52 @@ function Scanner({ onResult }) {
       if (!res.ok) {
         setError(data.error || 'Server error')
       } else {
-        // Backend now returns a full scan entry — pass through directly
-        onResult(data)
+        setHistory(prev => [{ ...data, id: Date.now() }, ...prev])
         setUrl('')
       }
     } catch {
-      setError('Could not connect to the backend. Is the Flask server running on port 5001?')
+      setError('Could not connect to the backend. Make sure api.py is running.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="scanner-card">
-      <div className="scanner-head">
-        <div>
-          <div className="scanner-title">Scan a URL</div>
-          <div className="scanner-sub">Paste any URL — AI model will classify it in real-time</div>
-        </div>
-        <span className="scanner-badge">🤖 Random Forest</span>
-      </div>
-      <form className="scanner-form" onSubmit={handleSubmit}>
-        <div className="scanner-icon">🔍</div>
-        <input
-          type="text"
-          className="scanner-input"
-          placeholder="https://example.com"
-          value={url}
-          onChange={e => setUrl(e.target.value)}
-          disabled={loading}
-          autoFocus
-        />
-        <button type="submit" className="scanner-btn" disabled={loading}>
-          {loading ? (
-            <><span className="spinner" /> Scanning…</>
-          ) : 'Classify URL →'}
-        </button>
-      </form>
-      {error && <div className="scanner-error">⚠️ {error}</div>}
-    </div>
-  )
-}
+    <div className="container">
+      <header>
+        <div className="header-badge">🤖 Random Forest Classifier</div>
+        <h1>🔍 URL Phishing Classifier</h1>
+        <p className="subtitle">Paste any URL to instantly detect whether it's legitimate or a phishing attempt.</p>
+      </header>
 
-// ── Section heading ───────────────────────────────────────────────────────────
-function SectionHead({ icon, title, sub, action }) {
-  return (
-    <div className="section-head">
-      <div className="section-head-left">
-        <span className="section-head-icon">{icon}</span>
-        <div>
-          <div className="section-head-title">{title}</div>
-          {sub && <div className="section-head-sub">{sub}</div>}
-        </div>
-      </div>
-      {action}
-    </div>
-  )
-}
-
-// ── Root App ──────────────────────────────────────────────────────────────────
-export default function App() {
-  const [history,     setHistory]     = useState([])
-  const [selected,    setSelected]    = useState(null)
-  const [modelOk,     setModelOk]     = useState(true)
-  const [loadingHist, setLoadingHist] = useState(true)
-
-  // Fetch health + persisted scan history on mount
-  useEffect(() => {
-    fetch(`${API_URL}/health`)
-      .then(r => r.ok ? setModelOk(true) : setModelOk(false))
-      .catch(() => setModelOk(false))
-
-    fetch(`${API_URL}/history`)
-      .then(r => r.json())
-      .then(data => { setHistory(Array.isArray(data) ? data : []); setLoadingHist(false) })
-      .catch(() => setLoadingHist(false))
-  }, [])
-
-  const addScan = (scan) => setHistory(prev => [scan, ...prev])
-
-  const clearHistory = async () => {
-    await fetch(`${API_URL}/history`, { method: 'DELETE' }).catch(() => {})
-    setHistory([])
-  }
-
-  return (
-    <div className="dashboard-root">
-      <div className="dashboard-main">
-        {/* ── Header ── */}
-        <header className="topbar">
-          <div className="topbar-brand">
-            <span className="topbar-logo">🛡️</span>
-            <div>
-              <div className="topbar-name">KavachX</div>
-              <div className="topbar-tagline">Phishing Intelligence Platform</div>
-            </div>
-          </div>
-
-          <div className="topbar-center">
-            <span className="topbar-title">Phishing Intelligence Dashboard</span>
-            <span className="topbar-date">{new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</span>
-          </div>
-
-          <div className="topbar-right">
-            <div className={`status-pill ${modelOk ? 'pill-ok' : 'pill-err'}`}>
-              <span className="pulse-dot" />
-              <span>{modelOk ? 'Model Online' : 'Model Offline'}</span>
-            </div>
-            <button
-              className="clear-history-btn"
-              onClick={clearHistory}
-              disabled={history.length === 0}
-              title="Clear all scan history"
-            >
-              ↺ Clear
-            </button>
-          </div>
-        </header>
-
-        {/* ── Scanner ── */}
-        <section id="scanner" className="dash-section">
-          <Scanner onResult={addScan} />
-        </section>
-
-        {/* ── KPI Cards ── */}
-        <section id="metrics" className="dash-section">
-          <SectionHead icon="📊" title="Overview" sub="Real-time threat statistics across all scanned URLs" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : <MetricCards scans={history} />}
-        </section>
-
-        {/* ── Security Glimpse ── */}
-        {!loadingHist && history.length > 0 && (
-          <section id="glimpse" className="dash-section">
-            <SectionHead icon="🛡" title="Top Security Risks Detected" sub="Aggregated threat intelligence from all scanned URLs" />
-            <SecurityGlimpse scans={history} />
-          </section>
-        )}
-
-        {/* ── Charts ── */}
-        <section id="charts" className="dash-section">
-          <SectionHead icon="📈" title="Risk Analytics" sub="Trend analysis and distribution of threat classifications" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : (
-            <div className="charts-row">
-              <div className="chart-col-wide"><TrendChart scans={history} /></div>
-              <div className="chart-col-narrow"><DistributionChart scans={history} /></div>
-            </div>
-          )}
-        </section>
-
-        {/* ── Activity Log ── */}
-        <section id="log" className="dash-section">
-          <ActivityLog scans={history} onSelect={setSelected} loading={loadingHist} />
-        </section>
-
-        {/* ── Threat Intelligence ── */}
-        <section id="intel" className="dash-section">
-          <SectionHead icon="⚡" title="Threat Intelligence" sub="Pattern analysis derived from detected threats" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : <ThreatIntel scans={history} />}
-        </section>
-
-        <div className="dashboard-footer">
-          KavachX · AI-Powered Phishing Detection · Random Forest Classifier · 21-feature model
-        </div>
+      <div className="search-card">
+        <form className="search-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            className="url-input"
+            placeholder="https://example.com"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            disabled={loading}
+            autoFocus
+          />
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'Checking...' : 'Classify URL'}
+          </button>
+        </form>
+        {error && <div className="error-box">⚠️ {error}</div>}
       </div>
 
-      {/* ── Scan detail modal ── */}
-      {selected && (
-        <ScanModal scan={selected} onClose={() => setSelected(null)} />
+      {history.length > 0 && (
+        <section className="history">
+          <div className="history-header">
+            <h2>Results</h2>
+            <button className="clear-btn" onClick={() => setHistory([])}>Clear</button>
+          </div>
+          <ul className="result-list">
+            {history.map(item => <ResultItem key={item.id} item={item} />)}
+          </ul>
+        </section>
       )}
     </div>
   )

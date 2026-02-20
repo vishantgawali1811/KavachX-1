@@ -16,33 +16,30 @@ export default function StatChart({ features }) {
   const normalizedValues = features.map(f => parseFloat(((f.value / maxVal) * 100).toFixed(1)))
   const importances = features.map(f => parseFloat((f.importance * 100).toFixed(2)))
 
-  // Dynamic height: 38px per feature row + 60px for legend/padding
-  const chartHeight = features.length * 38 + 60
-
   const data = {
     labels,
     datasets: [
       {
         label: 'Normalised Value (%)',
         data: normalizedValues,
-        backgroundColor: 'rgba(99,102,241,0.75)',
-        borderColor: 'rgba(99,102,241,1)',
+        backgroundColor: 'rgba(99,102,241,0.65)',
+        borderColor: 'rgba(99,102,241,0.9)',
         borderWidth: 0,
         borderRadius: 4,
         borderSkipped: false,
-        barPercentage: 0.6,
-        categoryPercentage: 0.75,
+        barPercentage: 0.55,
+        categoryPercentage: 0.8,
       },
       {
         label: 'Model Importance (%)',
         data: importances,
-        backgroundColor: 'rgba(236,72,153,0.75)',
-        borderColor: 'rgba(236,72,153,1)',
+        backgroundColor: 'rgba(236,72,153,0.65)',
+        borderColor: 'rgba(236,72,153,0.9)',
         borderWidth: 0,
         borderRadius: 4,
         borderSkipped: false,
-        barPercentage: 0.6,
-        categoryPercentage: 0.75,
+        barPercentage: 0.55,
+        categoryPercentage: 0.8,
       },
     ],
   }
@@ -57,13 +54,13 @@ export default function StatChart({ features }) {
         position: 'top',
         align: 'end',
         labels: {
-          color: '#94a3b8',
+          color: '#64748b',
           font: { size: 11, family: 'Inter, system-ui, sans-serif' },
-          boxWidth: 12,
-          boxHeight: 12,
+          boxWidth: 10,
+          boxHeight: 10,
           borderRadius: 3,
           usePointStyle: false,
-          padding: 16,
+          padding: 18,
         },
       },
       tooltip: {
@@ -87,16 +84,9 @@ export default function StatChart({ features }) {
     },
     scales: {
       x: {
-        min: 0,
-        max: 100,
-        grid: { color: 'rgba(30,45,71,0.5)', drawTicks: false },
+        grid: { color: 'rgba(30,45,71,0.6)', drawTicks: false },
         border: { display: false },
-        ticks: {
-          color: '#475569',
-          font: { size: 10, family: 'Inter, system-ui, sans-serif' },
-          padding: 6,
-          stepSize: 25,
-        },
+        ticks: { color: '#334155', font: { size: 10 }, padding: 6 },
       },
       y: {
         grid: { display: false },
@@ -104,18 +94,14 @@ export default function StatChart({ features }) {
         ticks: {
           color: '#94a3b8',
           font: { size: 11, family: 'Inter, system-ui, sans-serif' },
-          padding: 12,
-          crossAlign: 'far',
+          padding: 10,
         },
       },
-    },
-    layout: {
-      padding: { top: 4, right: 16, bottom: 4, left: 4 },
     },
   }
 
   return (
-    <div className="stat-chart-wrap" style={{ height: `${chartHeight}px` }}>
+    <div className="stat-chart-wrap">
       <Bar data={data} options={options} />
     </div>
   )

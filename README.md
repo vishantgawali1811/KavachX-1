@@ -1,4 +1,4 @@
-# ML-URL-phishing-classifier
+# ml-url-phishing-classifier
 
 ## Features
 1. ML Model Creation: Trains an ML model selected URL features.
