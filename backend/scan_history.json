@@ -1,5 +1,859 @@
 [
   {
+    "id": "ab9cf486-5399-40fc-944d-c925f02305bc",
+    "url": "http://localhost:3000/",
+    "timestamp": "2026-02-20T12:30:35Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 1.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 22.0,
+      "length_hostname": 9.0,
+      "nb_dots": 0.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.1818,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 7.3333,
+      "avg_word_host": 9.0,
+      "avg_word_path": 6.5,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6821,
+    "structural_score": 0.0,
+    "content_score": 0.1,
+    "final_score": 0.3029,
+    "risk_score": 0.3029,
+    "risk_pct": 30,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Missing HTTPS (plain HTTP connection)",
+      "Excessive ALL-CAPS text detected (12 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "https_token",
+        "explanation": "The website uses HTTP instead of HTTPS \u2014 meaning the connection is NOT encrypted.",
+        "risk": "Everything you type on this site (passwords, card numbers) is sent in plain text. Anyone on the same network can intercept it.",
+        "possible_attacks": [
+          "Man-in-the-Middle attack",
+          "Session hijacking",
+          "Data interception",
+          "Credential theft"
+        ],
+        "severity": "High"
+      },
+      {
+        "feature": "ratio_digits_url",
+        "explanation": "A large portion of the URL consists of numbers.",
+        "risk": "Randomly generated or machine-created phishing URLs tend to have lots of numbers to avoid pattern-based detection systems.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Phishing redirection",
+          "Malware injection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "48d37227-803c-4529-92f1-09ce26d9ca50",
+    "url": "http://testphp.vulnweb.com/",
+    "timestamp": "2026-02-20T12:30:17Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 1.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 27.0,
+      "length_hostname": 19.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 7.0,
+      "avg_word_host": 7.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6385,
+    "structural_score": 0.0,
+    "content_score": 0.0,
+    "final_score": 0.2554,
+    "risk_score": 0.2554,
+    "risk_pct": 26,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Missing HTTPS (plain HTTP connection)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 1,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "https_token",
+        "explanation": "The website uses HTTP instead of HTTPS \u2014 meaning the connection is NOT encrypted.",
+        "risk": "Everything you type on this site (passwords, card numbers) is sent in plain text. Anyone on the same network can intercept it.",
+        "possible_attacks": [
+          "Man-in-the-Middle attack",
+          "Session hijacking",
+          "Data interception",
+          "Credential theft"
+        ],
+        "severity": "High"
+      }
+    ]
+  },
+  {
+    "id": "f30adffe-0de9-4d9a-a513-f1ed7294331e",
+    "url": "https://bcgame.vc/login/regist",
+    "timestamp": "2026-02-20T12:30:04Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 30.0,
+      "length_hostname": 9.0,
+      "nb_dots": 1.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 4.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 5.6667,
+      "avg_word_host": 6.0,
+      "avg_word_path": 5.5,
+      "phish_hints": 1.0
+    },
+    "url_score": 0.6213,
+    "structural_score": 0.45,
+    "content_score": 0.1,
+    "final_score": 0.4135,
+    "risk_score": 0.4135,
+    "risk_pct": 41,
+    "prediction": 0,
+    "label": "suspicious",
+    "status": "Suspicious",
+    "reasons": [
+      "Password field detected on page",
+      "Excessive iframes detected (6)",
+      "Excessive ALL-CAPS text detected (12 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Medium",
+    "triggered_features_count": 1,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "phish_hints",
+        "explanation": "The URL contains phishing keywords like \"login\", \"verify\", \"secure\", \"admin\", \"account\", \"update\".",
+        "risk": "Attackers deliberately use these words to make fake pages look like official login or account management pages of real brands.",
+        "possible_attacks": [
+          "Credential theft",
+          "Account takeover",
+          "Fake login portal",
+          "Social engineering attack"
+        ],
+        "severity": "High"
+      }
+    ]
+  },
+  {
+    "id": "f8699203-cb96-42aa-89bd-c8181c706cf1",
+    "url": "https://voyagelab.fr/",
+    "timestamp": "2026-02-20T12:29:57Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 21.0,
+      "length_hostname": 12.0,
+      "nb_dots": 1.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 9.0,
+      "avg_word_host": 9.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.1424,
+    "structural_score": 0.0,
+    "content_score": 0.05,
+    "final_score": 0.072,
+    "risk_score": 0.072,
+    "risk_pct": 7,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 0,
+    "highest_severity": "None",
+    "security_analysis": []
+  },
+  {
+    "id": "75d51084-d0e6-45bf-be01-183c62bd5333",
+    "url": "http://localhost:3000/",
+    "timestamp": "2026-02-20T12:18:12Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 1.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 22.0,
+      "length_hostname": 9.0,
+      "nb_dots": 0.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.1818,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 7.3333,
+      "avg_word_host": 9.0,
+      "avg_word_path": 6.5,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6821,
+    "structural_score": 0.0,
+    "content_score": 0.1,
+    "final_score": 0.3029,
+    "risk_score": 0.3029,
+    "risk_pct": 30,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Missing HTTPS (plain HTTP connection)",
+      "Excessive ALL-CAPS text detected (12 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "https_token",
+        "explanation": "The website uses HTTP instead of HTTPS \u2014 meaning the connection is NOT encrypted.",
+        "risk": "Everything you type on this site (passwords, card numbers) is sent in plain text. Anyone on the same network can intercept it.",
+        "possible_attacks": [
+          "Man-in-the-Middle attack",
+          "Session hijacking",
+          "Data interception",
+          "Credential theft"
+        ],
+        "severity": "High"
+      },
+      {
+        "feature": "ratio_digits_url",
+        "explanation": "A large portion of the URL consists of numbers.",
+        "risk": "Randomly generated or machine-created phishing URLs tend to have lots of numbers to avoid pattern-based detection systems.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Phishing redirection",
+          "Malware injection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "7ed933dd-e0f7-4e92-bdad-ce046803a526",
+    "url": "https://voyagelab.fr/",
+    "timestamp": "2026-02-20T12:18:09Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 21.0,
+      "length_hostname": 12.0,
+      "nb_dots": 1.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 9.0,
+      "avg_word_host": 9.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.1424,
+    "structural_score": 0.0,
+    "content_score": 0.05,
+    "final_score": 0.072,
+    "risk_score": 0.072,
+    "risk_pct": 7,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 0,
+    "highest_severity": "None",
+    "security_analysis": []
+  },
+  {
+    "id": "fc658322-0cb0-444a-bb90-b51c3ce04dd7",
+    "url": "https://vit.edu.in/",
+    "timestamp": "2026-02-20T12:05:40Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 19.0,
+      "length_hostname": 10.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 3.0,
+      "avg_word_host": 3.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.2878,
+    "structural_score": 0.55,
+    "content_score": 0.1,
+    "final_score": 0.3101,
+    "risk_score": 0.3101,
+    "risk_pct": 31,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Excessive forms on page (4)",
+      "Excessive iframes detected (5)",
+      "Unusually high number of input fields (26)",
+      "Excessive ALL-CAPS text detected (27 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 2,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "avg_words_raw",
+        "explanation": "The average length of words in the full URL is unusually short.",
+        "risk": "Machine-generated phishing domains often use very short or meaningless word fragments that are hard to read or remember.",
+        "possible_attacks": [
+          "Phishing redirection",
+          "Scam landing page",
+          "Brand impersonation",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "f3a26a87-8757-4739-b776-d11708ec1d4e",
+    "url": "https://vit.edu.in/",
+    "timestamp": "2026-02-20T12:05:21Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 19.0,
+      "length_hostname": 10.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 3.0,
+      "avg_word_host": 3.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.2878,
+    "structural_score": 0.43,
+    "content_score": 0.15,
+    "final_score": 0.2891,
+    "risk_score": 0.2891,
+    "risk_pct": 29,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Excessive forms on page (4)",
+      "Iframe(s) present on page (1)",
+      "Unusually high number of input fields (20)",
+      "Excessive ALL-CAPS text detected (32 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 2,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "avg_words_raw",
+        "explanation": "The average length of words in the full URL is unusually short.",
+        "risk": "Machine-generated phishing domains often use very short or meaningless word fragments that are hard to read or remember.",
+        "possible_attacks": [
+          "Phishing redirection",
+          "Scam landing page",
+          "Brand impersonation",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "0b49e1a8-4471-403d-b802-14f01229e3e6",
+    "url": "https://www.google.com/search?gs_ssp=eJzj4tLP1TcwMTQ2qCwwYPRSLstMqUzMSczLTixSyMwrLsksKS1JVchPUyhJTc7Iy8_JT68EAIx7EU8&q=vidyalankar+institute+of+technology&oq=vidyalankar+intitue+&gs_lcrp=EgZjaHJvbWUqCQgBEC4YDRiABDIGCAAQRRg5MgkIARAuGA0YgAQyEggCEC4YDRivARjHARiABBiOBTIJCAMQABgNGIAEMgkIBBAAGA0YgAQyCQgFEAAYDRiABDIJCAYQABgNGIAEMgkIBxAAGA0YgAQyCQgIEAAYDRiABNIBCTEzNTMxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8",
+    "timestamp": "2026-02-20T12:05:13Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 402.0,
+      "length_hostname": 14.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 1.0,
+      "nb_qm": 1.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0448,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 16.0,
+      "avg_words_raw": 19.5789,
+      "avg_word_host": 4.5,
+      "avg_word_path": 21.3529,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.792,
+    "structural_score": 0.33,
+    "content_score": 0.05,
+    "final_score": 0.4308,
+    "risk_score": 0.4308,
+    "risk_pct": 43,
+    "prediction": 0,
+    "label": "suspicious",
+    "status": "Suspicious",
+    "reasons": [
+      "Unusually long URL (402 chars)",
+      "Multiple forms detected (2)",
+      "Iframe(s) present on page (1)",
+      "Unusually high number of input fields (17)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Medium",
+    "triggered_features_count": 3,
+    "highest_severity": "Medium",
+    "security_analysis": [
+      {
+        "feature": "length_url",
+        "explanation": "The URL is unusually long compared to normal websites.",
+        "risk": "Attackers make URLs very long to hide the real destination, overflow browser displays, and confuse security scanners.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Hidden redirect attack",
+          "Phishing redirection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "03fdddf5-8704-4314-95e7-8ec69474303b",
+    "url": "https://www.google.com/search?q=vidyalankar+institute+of+technology&oq=vidyalankar+in&gs_lcrp=EgZjaHJvbWUqCggAEAAY4wIYgAQyCggAEAAY4wIYgAQyBwgBEC4YgAQyBggCEEUYOTIQCAMQLhivARjHARiABBiOBTIHCAQQABiABDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPKgCALACAA&sourceid=chrome&ie=UTF-8",
+    "timestamp": "2026-02-20T12:05:10Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 261.0,
+      "length_hostname": 14.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 1.0,
+      "nb_qm": 1.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0192,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 16.0,
+      "avg_words_raw": 15.6667,
+      "avg_word_host": 4.5,
+      "avg_word_path": 17.3846,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6959,
+    "structural_score": 0.0,
+    "content_score": 0.05,
+    "final_score": 0.2934,
+    "risk_score": 0.2934,
+    "risk_pct": 29,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Unusually long URL (261 chars)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "Medium",
+    "security_analysis": [
+      {
+        "feature": "length_url",
+        "explanation": "The URL is unusually long compared to normal websites.",
+        "risk": "Attackers make URLs very long to hide the real destination, overflow browser displays, and confuse security scanners.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Hidden redirect attack",
+          "Phishing redirection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "9d749feb-3b70-4bc8-944f-76fec5c4c275",
+    "url": "http://localhost:3000/",
+    "timestamp": "2026-02-20T11:59:14Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 1.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 22.0,
+      "length_hostname": 9.0,
+      "nb_dots": 0.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.1818,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 7.3333,
+      "avg_word_host": 9.0,
+      "avg_word_path": 6.5,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6821,
+    "structural_score": 0.0,
+    "content_score": 0.1,
+    "final_score": 0.3029,
+    "risk_score": 0.3029,
+    "risk_pct": 30,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Missing HTTPS (plain HTTP connection)",
+      "Excessive ALL-CAPS text detected (12 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "https_token",
+        "explanation": "The website uses HTTP instead of HTTPS \u2014 meaning the connection is NOT encrypted.",
+        "risk": "Everything you type on this site (passwords, card numbers) is sent in plain text. Anyone on the same network can intercept it.",
+        "possible_attacks": [
+          "Man-in-the-Middle attack",
+          "Session hijacking",
+          "Data interception",
+          "Credential theft"
+        ],
+        "severity": "High"
+      },
+      {
+        "feature": "ratio_digits_url",
+        "explanation": "A large portion of the URL consists of numbers.",
+        "risk": "Randomly generated or machine-created phishing URLs tend to have lots of numbers to avoid pattern-based detection systems.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Phishing redirection",
+          "Malware injection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "9e17b831-4781-42a6-8ce1-5b6c28c2d4cf",
+    "url": "https://www.amazon.com/",
+    "timestamp": "2026-02-20T11:55:56Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 23.0,
+      "length_hostname": 14.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 4.5,
+      "avg_word_host": 4.5,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.0008,
+    "structural_score": 0.33,
+    "content_score": 0.05,
+    "final_score": 0.1143,
+    "risk_score": 0.1143,
+    "risk_pct": 11,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Multiple forms detected (2)",
+      "Iframe(s) present on page (1)",
+      "Unusually high number of input fields (11)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 2,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
     "id": "d50f2ab7-e855-47ab-b722-4a393d45804e",
     "url": "https://scholarships.gov.in/",
     "timestamp": "2026-02-20T11:50:47Z",

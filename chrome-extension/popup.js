@@ -88,7 +88,7 @@ btnCheck.addEventListener('click', async () => {
     // Cache for this URL
     chrome.storage.local.set({ lastResult: data });
     // Notify background to update badge
-    chrome.runtime.sendMessage({ type: 'RESULT', data });
+    chrome.runtime.sendMessage({ type: 'RESULT', data }).catch(() => {});
   } catch (err) {
     setVerdict('idle', '⚠ Cannot reach API — is backend running?');
     meterPct.textContent = '?';
@@ -246,7 +246,7 @@ function saveToLog(data) {
 }
 
 btnLog.addEventListener('click', () => {
-  chrome.tabs.create({ url: chrome.runtime.getURL('log.html') });
+  chrome.tabs.create({ url: 'http://localhost:3000/' });
 });
 
 btnClear.addEventListener('click', () => {

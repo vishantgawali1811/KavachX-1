@@ -103,7 +103,7 @@ function injectWarning(data, tabId) {
 
   if (!tabId) {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      if (tab) chrome.tabs.sendMessage(tab.id, payload);
+      if (tab) chrome.tabs.sendMessage(tab.id, payload).catch(() => {});
     });
     return;
   }
