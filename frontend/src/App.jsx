@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 import MetricCards        from './components/MetricCards.jsx'
 import TrendChart         from './components/TrendChart.jsx'
@@ -8,6 +8,65 @@ import ScanModal          from './components/ScanModal.jsx'
 import ThreatIntel        from './components/ThreatIntel.jsx'
 
 const API_URL = 'http://localhost:5001'
+
+// ── Security Glimpse — aggregated advisory stats ──────────────────────────────
+function SecurityGlimpse({ scans }) {
+  const stats = useMemo(() => {
+    if (!scans.length) return null
+
+    let highCount = 0, medCount = 0, lowCount = 0
+    const attackFreq = {}
+
+    scans.forEach(s => {
+      const sev = s.highest_severity
+      if (sev === 'High')   highCount++
+      else if (sev === 'Medium') medCount++
+      else if (sev === 'Low')    lowCount++
+
+      ;(s.security_analysis ?? []).forEach(e => {
+        e.possible_attacks.forEach(atk => {
+          attackFreq[atk] = (attackFreq[atk] ?? 0) + 1
+        })
+      })
+    })
+
+    const topAttack = Object.entries(attackFreq)
+      .sort((a, b) => b[1] - a[1])[0]
+
+    const threats = scans.filter(s => s.status === 'Phishing' || s.status === 'Suspicious').length
+
+    return { highCount, medCount, lowCount, topAttack, threats }
+  }, [scans])
+
+  if (!stats) return null
+
+  return (
+    <div className="glimpse-grid">
+      <div className="glimpse-card gc-red">
+        <div className="glimpse-val">{stats.threats}</div>
+        <div className="glimpse-label">Threats Detected</div>
+        <div className="glimpse-icon">🚨</div>
+      </div>
+      <div className="glimpse-card gc-orange">
+        <div className="glimpse-val">{stats.highCount}</div>
+        <div className="glimpse-label">High Severity Alerts</div>
+        <div className="glimpse-icon">🔴</div>
+      </div>
+      <div className="glimpse-card gc-yellow">
+        <div className="glimpse-val">{stats.medCount}</div>
+        <div className="glimpse-label">Medium Severity</div>
+        <div className="glimpse-icon">🟡</div>
+      </div>
+      <div className="glimpse-card gc-blue">
+        <div className="glimpse-val">{stats.topAttack ? stats.topAttack[0] : '—'}</div>
+        <div className="glimpse-label">
+          Most Common Attack{stats.topAttack ? ` (${stats.topAttack[1]}×)` : ''}
+        </div>
+        <div className="glimpse-icon">🎯</div>
+      </div>
+    </div>
+  )
+}
 
 // ── URL Scanner card ──────────────────────────────────────────────────────────
 function Scanner({ onResult }) {
@@ -165,6 +224,14 @@ export default function App() {
             ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
             : <MetricCards scans={history} />}
         </section>
+
+        {/* ── Security Glimpse ── */}
+        {!loadingHist && history.length > 0 && (
+          <section id="glimpse" className="dash-section">
+            <SectionHead icon="🛡" title="Top Security Risks Detected" sub="Aggregated threat intelligence from all scanned URLs" />
+            <SecurityGlimpse scans={history} />
+          </section>
+        )}
 
         {/* ── Charts ── */}
         <section id="charts" className="dash-section">

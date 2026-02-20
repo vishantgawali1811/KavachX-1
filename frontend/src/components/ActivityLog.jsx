@@ -23,6 +23,25 @@ function StatusBadge({ status }) {
   return <span className={`tbl-badge ${cls}`}>{icon} {status}</span>
 }
 
+function SevBadge({ sev }) {
+  if (!sev || sev === 'None') return <span className="tbl-no-sev">—</span>
+  const cls = sev === 'High' ? 'sev-high' : sev === 'Medium' ? 'sev-med' : 'sev-low'
+  return <span className={`sev-badge ${cls}`}>{sev}</span>
+}
+
+function ThreatTags({ securityAnalysis }) {
+  if (!securityAnalysis || securityAnalysis.length === 0)
+    return <span className="tbl-no-sev">—</span>
+  // collect unique attack types from top 2 highest-severity entries
+  const top = securityAnalysis.slice(0, 2)
+  const attacks = [...new Set(top.flatMap(e => e.possible_attacks))].slice(0, 2)
+  return (
+    <div className="threat-tags">
+      {attacks.map(a => <span key={a} className="threat-tag">{a}</span>)}
+    </div>
+  )
+}
+
 function RiskBar({ pct }) {
   const color =
     pct >= 70 ? '#ef4444' :
@@ -133,6 +152,8 @@ export default function ActivityLog({ scans, onSelect, loading }) {
               >
                 Risk Score {sortIcon('risk_pct')}
               </th>
+              <th className="col-sev">Severity</th>
+              <th className="col-threats">Top Threats</th>
               <th
                 className="col-time sortable"
                 onClick={() => toggleSort('timestamp')}
@@ -145,12 +166,12 @@ export default function ActivityLog({ scans, onSelect, loading }) {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan={5} className="tbl-empty">Loading scan history…</td>
+                <td colSpan={7} className="tbl-empty">Loading scan history…</td>
               </tr>
             )}
             {!loading && filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="tbl-empty">
+                <td colSpan={7} className="tbl-empty">
                   {scans.length === 0 ? 'No scans yet — paste a URL above to run your first check.' : 'No results match your filters.'}
                 </td>
               </tr>
@@ -169,6 +190,12 @@ export default function ActivityLog({ scans, onSelect, loading }) {
                 </td>
                 <td className="col-risk">
                   <RiskBar pct={s.risk_pct} />
+                </td>
+                <td className="col-sev">
+                  <SevBadge sev={s.highest_severity} />
+                </td>
+                <td className="col-threats">
+                  <ThreatTags securityAnalysis={s.security_analysis} />
                 </td>
                 <td className="col-time">
                   <span className="tbl-time">
