@@ -1,5 +1,483 @@
 [
   {
+    "id": "d55159ef-e432-478b-a1be-c1dbb310a8bd",
+    "url": "https://scholarships.gov.in/",
+    "timestamp": "2026-02-20T12:41:50Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 28.0,
+      "length_hostname": 19.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 0.0,
+      "avg_words_raw": 12.0,
+      "avg_word_host": 12.0,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.3418,
+    "structural_score": 0.0,
+    "content_score": 0.0,
+    "final_score": 0.1367,
+    "risk_score": 0.1367,
+    "risk_pct": 14,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 0,
+    "highest_severity": "None",
+    "security_analysis": []
+  },
+  {
+    "id": "75185f1a-9231-48f9-a929-6dd59273d6b5",
+    "url": "http://localhost:3000/",
+    "timestamp": "2026-02-20T12:41:11Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 1.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 22.0,
+      "length_hostname": 9.0,
+      "nb_dots": 0.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 0.0,
+      "ratio_digits_url": 0.1818,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 7.3333,
+      "avg_word_host": 9.0,
+      "avg_word_path": 6.5,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.6821,
+    "structural_score": 0.0,
+    "content_score": 0.1,
+    "final_score": 0.3029,
+    "risk_score": 0.3029,
+    "risk_pct": 30,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Missing HTTPS (plain HTTP connection)",
+      "Excessive ALL-CAPS text detected (12 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "https_token",
+        "explanation": "The website uses HTTP instead of HTTPS \u2014 meaning the connection is NOT encrypted.",
+        "risk": "Everything you type on this site (passwords, card numbers) is sent in plain text. Anyone on the same network can intercept it.",
+        "possible_attacks": [
+          "Man-in-the-Middle attack",
+          "Session hijacking",
+          "Data interception",
+          "Credential theft"
+        ],
+        "severity": "High"
+      },
+      {
+        "feature": "ratio_digits_url",
+        "explanation": "A large portion of the URL consists of numbers.",
+        "risk": "Randomly generated or machine-created phishing URLs tend to have lots of numbers to avoid pattern-based detection systems.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Phishing redirection",
+          "Malware injection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "5b3586d7-c263-43cc-a608-07522f81d881",
+    "url": "https://www.idbi.bank.in/",
+    "timestamp": "2026-02-20T12:41:04Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 25.0,
+      "length_hostname": 16.0,
+      "nb_dots": 3.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 3.5,
+      "avg_word_host": 3.5,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.0006,
+    "structural_score": 0.0,
+    "content_score": 0.15,
+    "final_score": 0.0452,
+    "risk_score": 0.0452,
+    "risk_pct": 5,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Excessive ALL-CAPS text detected (8 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_words_raw",
+        "explanation": "The average length of words in the full URL is unusually short.",
+        "risk": "Machine-generated phishing domains often use very short or meaningless word fragments that are hard to read or remember.",
+        "possible_attacks": [
+          "Phishing redirection",
+          "Scam landing page",
+          "Brand impersonation",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "9e3ed8f9-41e9-4cac-bbc6-4708f44375ca",
+    "url": "https://www.idbi.bank.in/",
+    "timestamp": "2026-02-20T12:41:03Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 25.0,
+      "length_hostname": 16.0,
+      "nb_dots": 3.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 3.5,
+      "avg_word_host": 3.5,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.0006,
+    "structural_score": 0.0,
+    "content_score": 0.15,
+    "final_score": 0.0452,
+    "risk_score": 0.0452,
+    "risk_pct": 5,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Excessive ALL-CAPS text detected (8 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_words_raw",
+        "explanation": "The average length of words in the full URL is unusually short.",
+        "risk": "Machine-generated phishing domains often use very short or meaningless word fragments that are hard to read or remember.",
+        "possible_attacks": [
+          "Phishing redirection",
+          "Scam landing page",
+          "Brand impersonation",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "dcbce534-4185-4f7f-8386-3093b0630006",
+    "url": "https://www.idbi.bank.in/",
+    "timestamp": "2026-02-20T12:40:58Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 25.0,
+      "length_hostname": 16.0,
+      "nb_dots": 3.0,
+      "nb_hyphens": 0.0,
+      "nb_qm": 0.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 3.0,
+      "avg_words_raw": 3.5,
+      "avg_word_host": 3.5,
+      "avg_word_path": 0.0,
+      "phish_hints": 0.0
+    },
+    "url_score": 0.0006,
+    "structural_score": 0.0,
+    "content_score": 0.15,
+    "final_score": 0.0452,
+    "risk_score": 0.0452,
+    "risk_pct": 5,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Excessive ALL-CAPS text detected (8 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 3,
+    "highest_severity": "Low",
+    "security_analysis": [
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_words_raw",
+        "explanation": "The average length of words in the full URL is unusually short.",
+        "risk": "Machine-generated phishing domains often use very short or meaningless word fragments that are hard to read or remember.",
+        "possible_attacks": [
+          "Phishing redirection",
+          "Scam landing page",
+          "Brand impersonation",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
+    "id": "fb78af5c-5b64-41c0-b74d-c8862768e85f",
+    "url": "https://www.google.com/search?q=bank+websites&oq=bank+website&gs_lcrp=EgZjaHJvbWUqBwgAEAAYgAQyBwgAEAAYgAQyBggBEEUYOTIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDIHCAgQABiABDIHCAkQABiABNIBCDI5MTdqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8",
+    "timestamp": "2026-02-20T12:40:51Z",
+    "features": {
+      "ip": 0.0,
+      "https_token": 0.0,
+      "prefix_suffix": 0.0,
+      "shortening_service": 0.0,
+      "suspicious_tld": 0.0,
+      "statistical_report": 0.0,
+      "length_url": 259.0,
+      "length_hostname": 14.0,
+      "nb_dots": 2.0,
+      "nb_hyphens": 1.0,
+      "nb_qm": 1.0,
+      "nb_percent": 0.0,
+      "nb_slash": 3.0,
+      "nb_www": 1.0,
+      "ratio_digits_url": 0.0116,
+      "ratio_digits_host": 0.0,
+      "char_repeat": 9.0,
+      "avg_words_raw": 15.5333,
+      "avg_word_host": 4.5,
+      "avg_word_path": 17.2308,
+      "phish_hints": 2.0
+    },
+    "url_score": 0.7324,
+    "structural_score": 0.25,
+    "content_score": 0.1,
+    "final_score": 0.398,
+    "risk_score": 0.398,
+    "risk_pct": 40,
+    "prediction": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Multiple phishing-hint keywords in URL (2)",
+      "Unusually long URL (259 chars)",
+      "Multiple forms detected (2)",
+      "Unusually high number of input fields (15)",
+      "Excessive ALL-CAPS text detected (6 instances)"
+    ],
+    "hybrid": true,
+    "nlp_model_used": false,
+    "risk_level": "Low",
+    "triggered_features_count": 4,
+    "highest_severity": "High",
+    "security_analysis": [
+      {
+        "feature": "phish_hints",
+        "explanation": "The URL contains phishing keywords like \"login\", \"verify\", \"secure\", \"admin\", \"account\", \"update\".",
+        "risk": "Attackers deliberately use these words to make fake pages look like official login or account management pages of real brands.",
+        "possible_attacks": [
+          "Credential theft",
+          "Account takeover",
+          "Fake login portal",
+          "Social engineering attack"
+        ],
+        "severity": "High"
+      },
+      {
+        "feature": "length_url",
+        "explanation": "The URL is unusually long compared to normal websites.",
+        "risk": "Attackers make URLs very long to hide the real destination, overflow browser displays, and confuse security scanners.",
+        "possible_attacks": [
+          "URL obfuscation",
+          "Obfuscation attack",
+          "Hidden redirect attack",
+          "Phishing redirection"
+        ],
+        "severity": "Medium"
+      },
+      {
+        "feature": "char_repeat",
+        "explanation": "The URL contains repeated character sequences (e.g. \"aaaa\", \"xxxxx\").",
+        "risk": "Attackers use repeated characters to pad URLs, confuse automated scanners, or fill space in obfuscated fake addresses.",
+        "possible_attacks": [
+          "Obfuscation attack",
+          "URL obfuscation",
+          "Social engineering attack",
+          "Malicious redirection"
+        ],
+        "severity": "Low"
+      },
+      {
+        "feature": "avg_word_host",
+        "explanation": "The average length of words in the hostname is unusually short.",
+        "risk": "Randomly generated phishing domains typically have very short, meaningless hostname segments.",
+        "possible_attacks": [
+          "Brand impersonation",
+          "Fake login portal",
+          "Phishing redirection",
+          "Social engineering attack"
+        ],
+        "severity": "Low"
+      }
+    ]
+  },
+  {
     "id": "ab9cf486-5399-40fc-944d-c925f02305bc",
     "url": "http://localhost:3000/",
     "timestamp": "2026-02-20T12:30:35Z",
