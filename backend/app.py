@@ -15,8 +15,11 @@ Run:
     python app.py
 """
 
+import json
 import logging
 import os
+import time
+import uuid
 
 import joblib
 import numpy as np
@@ -62,6 +65,29 @@ PHISHING_CLASS_INDEX = (
     if model is not None and 'phishing' in list(model.classes_)
     else 1
 )
+
+# ---------------------------------------------------------------------------
+# Scan history — persisted to a JSON file between restarts
+# ---------------------------------------------------------------------------
+HISTORY_PATH = os.path.join(os.path.dirname(__file__), 'scan_history.json')
+
+def _load_history():
+    try:
+        with open(HISTORY_PATH, 'r') as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def _save_history(history):
+    try:
+        with open(HISTORY_PATH, 'w') as f:
+            json.dump(history, f, indent=2)
+    except Exception as exc:
+        logger.warning('Could not persist scan history: %s', exc)
+
+scan_history = _load_history()
+logger.info('Loaded %d historical scans from disk.', len(scan_history))
 
 
 # ---------------------------------------------------------------------------
@@ -141,13 +167,47 @@ def predict():
     # ── Build response ───────────────────────────────────────────────────────
     feature_dict = {k: round(float(v), 4) for k, v in feature_vector.iloc[0].to_dict().items()}
 
-    return jsonify({
+    # Derive a risk status for the frontend (matches frontend getStatus() thresholds)
+    if risk_score >= 0.70:
+        status = 'Phishing'
+    elif risk_score >= 0.40:
+        status = 'Suspicious'
+    else:
+        status = 'Safe'
+
+    scan_entry = {
+        'id':         str(uuid.uuid4()),
         'url':        url,
-        'prediction': prediction_int,           # 1 = phishing, 0 = legitimate
-        'risk_score': round(risk_score, 4),     # float 0.0 – 1.0
-        'label':      prediction_label,         # human-readable
-        'features':   feature_dict,             # extracted feature values
-    })
+        'prediction': prediction_int,
+        'risk_score': round(risk_score, 4),
+        'risk_pct':   round(risk_score * 100),
+        'label':      prediction_label,
+        'status':     status,
+        'features':   feature_dict,
+        'timestamp':  time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime()) + 'Z',
+    }
+
+    # Persist — cap history at 500 entries
+    scan_history.insert(0, scan_entry)
+    if len(scan_history) > 500:
+        scan_history.pop()
+    _save_history(scan_history)
+
+    return jsonify(scan_entry)
+
+
+@app.route('/history', methods=['GET'])
+def get_history():
+    """GET /history — returns all persisted scan results, newest first."""
+    return jsonify(scan_history)
+
+
+@app.route('/history', methods=['DELETE'])
+def clear_history():
+    """DELETE /history — wipes all persisted scan results."""
+    scan_history.clear()
+    _save_history(scan_history)
+    return jsonify({'status': 'cleared', 'count': 0})
 
 
 @app.route('/health', methods=['GET'])
