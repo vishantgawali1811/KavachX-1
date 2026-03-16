@@ -33,11 +33,13 @@ from hybrid_analysis import (
     structural_analysis,
     NLP_MODEL_AVAILABLE,
 )
+import hybrid_analysis as ha
 from attack_knowledge import (
     build_security_analysis,
     get_risk_level,
     get_highest_severity,
 )
+from message_analysis import analyze_message
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -105,6 +107,29 @@ def _save_history(history):
 
 scan_history = _load_history()
 logger.info('Loaded %d historical scans from disk.', len(scan_history))
+
+# ---------------------------------------------------------------------------
+# Message history — persisted to a JSON file between restarts
+# ---------------------------------------------------------------------------
+MESSAGE_HISTORY_PATH = os.path.join(os.path.dirname(__file__), 'message_history.json')
+
+def _load_message_history():
+    try:
+        with open(MESSAGE_HISTORY_PATH, 'r') as f:
+            data = json.load(f)
+            return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def _save_message_history(history):
+    try:
+        with open(MESSAGE_HISTORY_PATH, 'w') as f:
+            json.dump(history, f, indent=2)
+    except Exception as exc:
+        logger.warning('Could not persist message history: %s', exc)
+
+message_history = _load_message_history()
+logger.info('Loaded %d historical message scans from disk.', len(message_history))
 
 
 # ---------------------------------------------------------------------------
@@ -261,7 +286,80 @@ def health():
         'feature_names':     FEATURE_NAMES,
         'nlp_model_loaded':  NLP_MODEL_AVAILABLE,
         'hybrid_mode':       True,
+        'message_analysis':  True,
     })
+
+
+# ---------------------------------------------------------------------------
+# Message analysis routes (Part 3 — phishing message detection)
+# ---------------------------------------------------------------------------
+
+@app.route('/analyze-message', methods=['POST'])
+def analyze_message_route():
+    """
+    POST /analyze-message  — Phishing Message Detection
+    ----------------------------------------------------
+    Body:
+        { "message": "Your account has been suspended..." }
+
+    Optional fields:
+        { "message": "...", "sender": "...", "subject": "..." }
+
+    Returns risk score, classification, reasons, indicators, recommendation.
+    """
+    if not request.is_json:
+        return jsonify({'error': 'Content-Type must be application/json'}), 400
+
+    body = request.get_json(silent=True)
+    if body is None:
+        return jsonify({'error': 'Invalid JSON body'}), 400
+
+    message = body.get('message', '').strip()
+    if not message:
+        return jsonify({'error': 'Missing required field: message'}), 400
+
+    if len(message) < 5:
+        return jsonify({'error': 'Message too short for analysis (min 5 characters)'}), 400
+
+    # Run the analysis pipeline — pass the NLP classifier from hybrid_analysis
+    nlp_clf = ha._nlp_classifier if ha.NLP_MODEL_AVAILABLE else None
+    result = analyze_message(message, nlp_classifier=nlp_clf)
+
+    logger.info(
+        'MSG score=%.3f  label=%s  nlp=%s  snippet="%s"',
+        result['risk_score'], result['label'],
+        result['nlp_model_used'], result['message_snippet'][:50],
+    )
+
+    # Build the log entry
+    entry = {
+        'id':        f'msg-{uuid.uuid4()}',
+        'type':      'message',
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime()) + 'Z',
+        **result,
+    }
+
+    # Persist
+    message_history.insert(0, entry)
+    if len(message_history) > 500:
+        message_history.pop()
+    _save_message_history(message_history)
+
+    return jsonify(entry)
+
+
+@app.route('/message-history', methods=['GET'])
+def get_message_history():
+    """GET /message-history — returns all persisted message scan results."""
+    return jsonify(message_history)
+
+
+@app.route('/message-history', methods=['DELETE'])
+def clear_message_history():
+    """DELETE /message-history — wipes all persisted message scan results."""
+    message_history.clear()
+    _save_message_history(message_history)
+    return jsonify({'status': 'cleared', 'count': 0})
 
 
 @app.errorhandler(404)

@@ -26,6 +26,31 @@
     .header-title { font-size: 13px; font-weight: 700; color: #60a5fa; letter-spacing: .4px; }
     .header-sub   { font-size: 10px; color: #64748b; }
 
+    /* ── Tab bar ────────────────────────────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid #1e2535;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px 8px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      background: #0f1117;
+      color: #64748b;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-btn:hover { color: #94a3b8; }
+    .tab-btn.active {
+      color: #60a5fa;
+      border-bottom-color: #3b82f6;
+      background: #141824;
+    }
+
     /* ── URL strip ───────────────────────────────────────────────────────── */
     .url-strip {
       padding: 10px 16px;
@@ -51,6 +76,7 @@
     .meter-wrap { position: relative; width: 160px; height: 90px; }
     .meter-wrap svg { overflow: visible; }
     #arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+    #msg-arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
     .meter-label {
       position: absolute;
       bottom: 0; left: 50%;
@@ -148,6 +174,18 @@
       vertical-align: middle;
       margin-right: 6px;
     }
+
+    /* ── Message panel (mirrors URL panel) ─────────────────────────────── */
+    .msg-strip {
+      padding: 10px 16px;
+      background: #141824;
+      font-size: 11px;
+      color: #94a3b8;
+      word-break: break-all;
+      line-height: 1.5;
+      border-bottom: 1px solid #1e2535;
+    }
+    .msg-strip span { color: #cbd5e1; }
   </style>
 </head>
 <body>
@@ -156,56 +194,104 @@
   <div class="header">
     <img src="icons/icon48.png" alt="shield" />
     <div>
-      <div class="header-title">CERT-In Anti-Phishing Shield</div>
+      <div class="header-title">KavachX Anti-Phishing Shield</div>
       <div class="header-sub">AI-powered real-time detection</div>
     </div>
   </div>
 
-  <!-- Current URL -->
-  <div class="url-strip" id="url-strip">Loading current tab…</div>
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-url">&#128279; URL Scan</button>
+    <button class="tab-btn" id="tab-msg">&#128172; Message Scan</button>
+  </div>
 
-  <!-- Risk card -->
-  <div class="risk-card">
-    <!-- Arc meter -->
-    <div class="meter-wrap">
-      <svg width="160" height="90" viewBox="0 0 160 90">
-        <!-- track -->
-        <path d="M 10 88 A 70 70 0 0 1 150 88"
-              fill="none" stroke="#1e2535" stroke-width="12"
-              stroke-linecap="round"/>
-        <!-- fill -->
-        <path id="arc-fill"
-              d="M 10 88 A 70 70 0 0 1 150 88"
-              fill="none" stroke="#3b82f6" stroke-width="12"
-              stroke-linecap="round"
-              stroke-dasharray="219.9"
-              stroke-dashoffset="219.9"/>
-      </svg>
-      <div class="meter-label">
-        <div class="meter-pct" id="meter-pct">—</div>
-        <div class="meter-text">URL Model Risk</div>
+  <!-- ════════════════════════════════════════════════════════════════════
+       URL TAB (existing content wrapped)
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="panel-url">
+    <!-- Current URL -->
+    <div class="url-strip" id="url-strip">Loading current tab…</div>
+
+    <!-- Risk card -->
+    <div class="risk-card">
+      <!-- Arc meter -->
+      <div class="meter-wrap">
+        <svg width="160" height="90" viewBox="0 0 160 90">
+          <path d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#1e2535" stroke-width="12"
+                stroke-linecap="round"/>
+          <path id="arc-fill"
+                d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#3b82f6" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="219.9"
+                stroke-dashoffset="219.9"/>
+        </svg>
+        <div class="meter-label">
+          <div class="meter-pct" id="meter-pct">—</div>
+          <div class="meter-text">URL Model Risk</div>
+        </div>
+      </div>
+
+      <div class="verdict idle" id="verdict">&#11044; &nbsp;Not checked</div>
+
+      <div style="width:100%; padding: 0 0 4px;">
+        <button class="btn-check" id="btn-check">Check This URL</button>
       </div>
     </div>
 
-    <!-- Verdict chip -->
-    <div class="verdict idle" id="verdict">⬤ &nbsp;Not checked</div>
-
-    <!-- Check button -->
-    <div style="width:100%; padding: 0 0 4px;">
-      <button class="btn-check" id="btn-check">Check This URL</button>
+    <!-- Feature highlights -->
+    <div class="features" id="features-section" style="display:none;">
+      <div class="features-title">Top Risk Signals</div>
+      <div id="feature-list"></div>
     </div>
   </div>
 
-  <!-- Feature highlights (hidden until checked) -->
-  <div class="features" id="features-section" style="display:none;">
-    <div class="features-title">Top Risk Signals</div>
-    <div id="feature-list"></div>
+  <!-- ════════════════════════════════════════════════════════════════════
+       MESSAGE TAB (new)
+       ════════════════════════════════════════════════════════════════════ -->
+  <div id="panel-msg" style="display:none;">
+    <!-- Email snippet strip (like URL strip) -->
+    <div class="msg-strip" id="msg-strip">Open an email and click scan</div>
+
+    <!-- Risk card (mirrors URL risk card) -->
+    <div class="risk-card">
+      <div class="meter-wrap">
+        <svg width="160" height="90" viewBox="0 0 160 90">
+          <path d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#1e2535" stroke-width="12"
+                stroke-linecap="round"/>
+          <path id="msg-arc-fill"
+                d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#3b82f6" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="219.9"
+                stroke-dashoffset="219.9"/>
+        </svg>
+        <div class="meter-label">
+          <div class="meter-pct" id="msg-meter-pct">—</div>
+          <div class="meter-text">Email Risk Score</div>
+        </div>
+      </div>
+
+      <div class="verdict idle" id="msg-verdict">&#11044; &nbsp;Not checked</div>
+
+      <div style="width:100%; padding: 0 0 4px;">
+        <button class="btn-check" id="btn-msg-check">Check This Email</button>
+      </div>
+    </div>
+
+    <!-- Indicator signals (like feature highlights) -->
+    <div class="features" id="msg-features-section" style="display:none;">
+      <div class="features-title">Threat Indicators</div>
+      <div id="msg-feature-list"></div>
+    </div>
   </div>
 
   <!-- Footer -->
   <div class="footer">
-    <button class="btn-sm" id="btn-log">�️ Dashboard</button>
-    <button class="btn-sm" id="btn-clear">🗑 Clear Log</button>
+    <button class="btn-sm" id="btn-log">&#128202; Dashboard</button>
+    <button class="btn-sm" id="btn-clear">&#128465; Clear Log</button>
   </div>
 
   <script src="popup.js"></script>
