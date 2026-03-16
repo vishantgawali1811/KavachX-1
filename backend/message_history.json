@@ -1,5 +1,79 @@
 [
   {
+    "id": "msg-924a1541-a2e9-4948-a93d-6a8a4f691731",
+    "type": "message",
+    "timestamp": "2026-03-16T18:50:39Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
+    "id": "msg-d13fc373-20c5-4314-ad7c-a6ec6bb5aecc",
+    "type": "message",
+    "timestamp": "2026-03-16T17:33:06Z",
+    "risk_score": 0.05,
+    "risk_pct": 5,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Brand name mentioned: 'amazon' (no urgency \u2014 low risk)",
+      "Excessive ALL-CAPS text (9 instances) \u2014 fear/urgency tactic"
+    ],
+    "indicators": {
+      "urgency": false,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.05,
+    "message_snippet": "IN Skip navigation Create 9+ Python Programming with AI aifortechies.in Visit site Sponsored aiforte...",
+    "full_message_length": 2656
+  },
+  {
     "id": "msg-56bf8ba3-85cc-4fe3-93f8-683952ab5008",
     "type": "message",
     "timestamp": "2026-03-16T16:15:32Z",
