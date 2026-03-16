@@ -1,11 +1,36 @@
-// popup.js — drives popup.html
+// popup.js — drives popup.html (URL scan + Message scan)
 
-const API = 'http://localhost:5001/predict';
+const API_URL  = 'http://localhost:5001/predict';
+const MSG_API  = 'http://localhost:5001/analyze-message';
 
 // Arc math: path length ≈ 219.9 (half-circle r=70)
 const ARC_LEN = 219.9;
 
-// ── DOM refs ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════════════════
+const tabUrl   = document.getElementById('tab-url');
+const tabMsg   = document.getElementById('tab-msg');
+const panelUrl = document.getElementById('panel-url');
+const panelMsg = document.getElementById('panel-msg');
+
+tabUrl.addEventListener('click', () => {
+  tabUrl.classList.add('active');
+  tabMsg.classList.remove('active');
+  panelUrl.style.display = '';
+  panelMsg.style.display = 'none';
+});
+
+tabMsg.addEventListener('click', () => {
+  tabMsg.classList.add('active');
+  tabUrl.classList.remove('active');
+  panelMsg.style.display = '';
+  panelUrl.style.display = 'none';
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// URL TAB — existing logic (preserved exactly)
+// ═══════════════════════════════════════════════════════════════════════════
 const urlStrip      = document.getElementById('url-strip');
 const arcFill       = document.getElementById('arc-fill');
 const meterPct      = document.getElementById('meter-pct');
@@ -16,18 +41,16 @@ const btnClear      = document.getElementById('btn-clear');
 const featSection   = document.getElementById('features-section');
 const featureList   = document.getElementById('feature-list');
 
-// ── State ─────────────────────────────────────────────────────────────────
 let currentUrl = '';
 let currentTabId = null;
 
-// ── Init ──────────────────────────────────────────────────────────────────
+// Init — get current tab URL
 chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
   if (!tab) return;
   currentUrl   = tab.url || '';
   currentTabId = tab.id;
   urlStrip.innerHTML = `<span>${currentUrl}</span>`;
 
-  // Auto-load last cached result for this URL
   chrome.storage.local.get('lastResult', ({ lastResult }) => {
     if (lastResult && lastResult.url === currentUrl) {
       renderResult(lastResult);
@@ -35,7 +58,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
   });
 });
 
-// ── Collect full page data via scripting API ──────────────────────────────
+// Collect full page data via scripting API
 async function getPageData(tabId, url) {
   try {
     const [{ result }] = await chrome.scripting.executeScript({
@@ -60,12 +83,11 @@ async function getPageData(tabId, url) {
     });
     return { url, ...result };
   } catch (_) {
-    // scripting failed (e.g., Chrome internal page) — send URL only
     return { url };
   }
 }
 
-// ── Check button ──────────────────────────────────────────────────────────
+// Check URL button
 btnCheck.addEventListener('click', async () => {
   if (!currentUrl.startsWith('http')) {
     setVerdict('idle', '⚠ Cannot analyse this page');
@@ -73,10 +95,8 @@ btnCheck.addEventListener('click', async () => {
   }
   setBusy(true);
   try {
-    // Gather full page data for hybrid analysis
     const payload = await getPageData(currentTabId, currentUrl);
-
-    const res = await fetch(API, {
+    const res = await fetch(API_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),
@@ -85,9 +105,7 @@ btnCheck.addEventListener('click', async () => {
     const data = await res.json();
     renderResult(data);
     saveToLog(data);
-    // Cache for this URL
     chrome.storage.local.set({ lastResult: data });
-    // Notify background to update badge
     chrome.runtime.sendMessage({ type: 'RESULT', data }).catch(() => {});
   } catch (err) {
     setVerdict('idle', '⚠ Cannot reach API — is backend running?');
@@ -97,25 +115,19 @@ btnCheck.addEventListener('click', async () => {
   }
 });
 
-// ── Render ────────────────────────────────────────────────────────────────
 function renderResult(data) {
-  // Extension shows URL model score only (pure ML — no DOM/content layer)
-  const score = data.url_score ?? data.risk_score ?? data.final_score ?? 0
+  const score = data.url_score ?? data.risk_score ?? data.final_score ?? 0;
   const pct   = Math.round(score * 100);
 
-  // Arc
   const offset = ARC_LEN - (pct / 100) * ARC_LEN;
   arcFill.style.strokeDashoffset = offset;
 
-  // Colour
   const color = pct >= 70 ? '#f87171' : pct >= 40 ? '#fbbf24' : '#4ade80';
   arcFill.style.stroke = color;
 
-  // Percent label
-  meterPct.textContent  = `${pct}%`;
-  meterPct.style.color  = color;
+  meterPct.textContent = `${pct}%`;
+  meterPct.style.color = color;
 
-  // Verdict chip
   if (pct >= 70) {
     setVerdict('phishing', '🔴  Phishing Detected');
   } else if (pct >= 40) {
@@ -124,14 +136,10 @@ function renderResult(data) {
     setVerdict('safe', '🟢  Looks Safe');
   }
 
-  // URL feature highlights
-  if (data.features) {
-    renderFeatures(data.features)
-  }
+  if (data.features) renderFeatures(data.features);
 
-  // Remove any leftover breakdown/reasons sections from previous renders
-  document.getElementById('score-breakdown')?.remove()
-  document.getElementById('reasons-section')?.remove()
+  document.getElementById('score-breakdown')?.remove();
+  document.getElementById('reasons-section')?.remove();
 }
 
 function setVerdict(cls, text) {
@@ -146,64 +154,6 @@ function setBusy(on) {
     : 'Check This URL';
 }
 
-// ── Sub-score breakdown ───────────────────────────────────────────────────
-function renderScoreBreakdown(data) {
-  // Remove any existing breakdown
-  const old = document.getElementById('score-breakdown');
-  if (old) old.remove();
-
-  if (!data.hybrid) return; // skip for URL-only responses
-
-  const urlPct  = Math.round((data.url_score        ?? 0) * 100);
-  const strPct  = Math.round((data.structural_score ?? 0) * 100);
-  const conPct  = Math.round((data.content_score    ?? 0) * 100);
-
-  const scoreColor = (p) => p >= 70 ? '#f87171' : p >= 40 ? '#fbbf24' : '#4ade80';
-
-  const el = document.createElement('div');
-  el.id = 'score-breakdown';
-  el.style.cssText = 'margin:8px 0;padding:8px 10px;background:#1e2a3a;border-radius:8px;font-size:12px;';
-  el.innerHTML = `
-    <div style="font-weight:600;color:#94a3b8;margin-bottom:6px;letter-spacing:.5px;">HYBRID BREAKDOWN</div>
-    <div class="sb-row" style="display:flex;justify-content:space-between;padding:2px 0;">
-      <span style="color:#cbd5e1;">URL Model</span>
-      <span style="color:${scoreColor(urlPct)};font-weight:700;">${urlPct}%</span>
-    </div>
-    <div class="sb-row" style="display:flex;justify-content:space-between;padding:2px 0;">
-      <span style="color:#cbd5e1;">Page Structure</span>
-      <span style="color:${scoreColor(strPct)};font-weight:700;">${strPct}%</span>
-    </div>
-    <div class="sb-row" style="display:flex;justify-content:space-between;padding:2px 0;">
-      <span style="color:#cbd5e1;">Content / NLP</span>
-      <span style="color:${scoreColor(conPct)};font-weight:700;">${conPct}%</span>
-    </div>`;
-
-  // Insert after verdict, before features section
-  verdictEl.after(el);
-}
-
-// ── Reasons list ──────────────────────────────────────────────────────────
-function renderReasons(reasons) {
-  const old = document.getElementById('reasons-section');
-  if (old) old.remove();
-  if (!reasons.length) return;
-
-  const el = document.createElement('div');
-  el.id = 'reasons-section';
-  el.style.cssText = 'margin:8px 0;padding:8px 10px;background:#1e2a3a;border-radius:8px;font-size:12px;';
-  const items = reasons.slice(0, 6).map(r =>
-    `<div style="color:#fbbf24;padding:2px 0;">⚠ ${r}</div>`
-  ).join('');
-  el.innerHTML = `
-    <div style="font-weight:600;color:#94a3b8;margin-bottom:6px;letter-spacing:.5px;">THREAT SIGNALS</div>
-    ${items}`;
-
-  const breakdown = document.getElementById('score-breakdown');
-  if (breakdown) breakdown.after(el);
-  else verdictEl.after(el);
-}
-
-// ── URL feature highlights ─────────────────────────────────────────────────
 const SIGNAL_LABELS = {
   ip:                 'IP in URL',
   https_token:        'No HTTPS',
@@ -227,7 +177,6 @@ function renderFeatures(features) {
   featSection.style.display = 'block';
 }
 
-// ── Log helpers ───────────────────────────────────────────────────────────
 function saveToLog(data) {
   chrome.storage.local.get({ phishLog: [] }, ({ phishLog }) => {
     phishLog.unshift({
@@ -255,3 +204,162 @@ btnClear.addEventListener('click', () => {
     setTimeout(() => { btnClear.textContent = '🗑 Clear Log'; }, 1500);
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MESSAGE TAB — scans email body from current page (mirrors URL tab style)
+// ═══════════════════════════════════════════════════════════════════════════
+const msgStrip       = document.getElementById('msg-strip');
+const msgArcFill     = document.getElementById('msg-arc-fill');
+const msgMeterPct    = document.getElementById('msg-meter-pct');
+const msgVerdictEl   = document.getElementById('msg-verdict');
+const btnMsgCheck    = document.getElementById('btn-msg-check');
+const msgFeatSection = document.getElementById('msg-features-section');
+const msgFeatureList = document.getElementById('msg-feature-list');
+
+// Extract email body text from current page via scripting API
+async function getEmailText(tabId) {
+  try {
+    const [{ result }] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        // Try common email selectors (Gmail, Outlook, Yahoo, generic)
+        const selectors = [
+          '.a3s.aiL',                    // Gmail message body
+          '.ii.gt div',                  // Gmail alt
+          '[role="main"] .adn',          // Gmail expanded
+          '.ReadMsgBody',                // Outlook web
+          '.rps_ad1d',                   // Outlook web alt
+          '[aria-label="Message body"]', // Outlook new
+          '.msg-body',                   // Yahoo
+          '.email-content',              // Generic
+          'article',                     // Generic article
+        ];
+        for (const sel of selectors) {
+          const el = document.querySelector(sel);
+          if (el && el.innerText.trim().length > 20) {
+            return el.innerText.trim().substring(0, 5000);
+          }
+        }
+        // Fallback: grab the main body text
+        return (document.body?.innerText || '').substring(0, 5000);
+      },
+    });
+    return result || '';
+  } catch (_) {
+    return '';
+  }
+}
+
+btnMsgCheck.addEventListener('click', async () => {
+  if (!currentUrl.startsWith('http')) {
+    setMsgVerdict('idle', '⚠ Cannot analyse this page');
+    return;
+  }
+
+  setMsgBusy(true);
+  msgStrip.innerHTML = '<span>Extracting email content…</span>';
+
+  try {
+    const emailText = await getEmailText(currentTabId);
+    if (!emailText || emailText.trim().length < 10) {
+      setMsgVerdict('idle', '⚠ No email content found on this page');
+      msgStrip.innerHTML = '<span>No email content detected</span>';
+      setMsgBusy(false);
+      return;
+    }
+
+    // Show snippet in strip
+    const snippet = emailText.substring(0, 120).replace(/\n/g, ' ');
+    msgStrip.innerHTML = `<span>${snippet}…</span>`;
+
+    const res = await fetch(MSG_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: emailText }),
+    });
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+    renderMsgResult(data);
+
+    // Save to local log
+    chrome.storage.local.get({ msgLog: [] }, ({ msgLog }) => {
+      msgLog.unshift({
+        snippet:    data.message_snippet || emailText.slice(0, 80),
+        label:      data.label,
+        risk_pct:   data.risk_pct,
+        status:     data.status,
+        reasons:    data.reasons || [],
+        ts:         new Date().toISOString(),
+      });
+      if (msgLog.length > 200) msgLog.length = 200;
+      chrome.storage.local.set({ msgLog });
+    });
+  } catch (err) {
+    setMsgVerdict('idle', '⚠ Cannot reach API — is backend running?');
+    msgMeterPct.textContent = '?';
+  } finally {
+    setMsgBusy(false);
+  }
+});
+
+function renderMsgResult(data) {
+  const pct = data.risk_pct ?? Math.round((data.risk_score ?? 0) * 100);
+
+  // Arc gauge (same math as URL tab)
+  const offset = ARC_LEN - (pct / 100) * ARC_LEN;
+  msgArcFill.style.strokeDashoffset = offset;
+
+  const color = pct >= 70 ? '#f87171' : pct >= 40 ? '#fbbf24' : '#4ade80';
+  msgArcFill.style.stroke = color;
+
+  msgMeterPct.textContent = `${pct}%`;
+  msgMeterPct.style.color = color;
+
+  if (pct >= 70) {
+    setMsgVerdict('phishing', '🔴  Phishing Email Detected');
+  } else if (pct >= 40) {
+    setMsgVerdict('suspicious', '🟡  Suspicious Email');
+  } else {
+    setMsgVerdict('safe', '🟢  Email Looks Safe');
+  }
+
+  // Risk signals table (mirrors URL features table)
+  const ind = data.indicators || {};
+  const INDICATOR_LABELS = {
+    urgency:              'Urgency / Pressure',
+    credential_request:   'Credential Harvesting',
+    impersonation:        'Brand Impersonation',
+    financial_scam:       'Financial Scam',
+    ai_generated:         'AI-Generated Content',
+  };
+
+  const hasLinks = ind.suspicious_links && ind.suspicious_links.length > 0;
+  let rows = Object.entries(INDICATOR_LABELS).map(([key, label]) => {
+    const active = !!ind[key];
+    return `<div class="feat-row">
+      <span>${label}</span>
+      <span class="feat-val ${active ? 'bad' : ''}">${active ? '⚠ Yes' : '✓ No'}</span>
+    </div>`;
+  });
+
+  // Add suspicious links row
+  rows.push(`<div class="feat-row">
+    <span>Suspicious Links</span>
+    <span class="feat-val ${hasLinks ? 'bad' : ''}">${hasLinks ? '⚠ ' + ind.suspicious_links.length + ' found' : '✓ None'}</span>
+  </div>`);
+
+  msgFeatureList.innerHTML = rows.join('');
+  msgFeatSection.style.display = 'block';
+}
+
+function setMsgVerdict(cls, text) {
+  msgVerdictEl.className = `verdict ${cls}`;
+  msgVerdictEl.innerHTML = text;
+}
+
+function setMsgBusy(on) {
+  btnMsgCheck.disabled  = on;
+  btnMsgCheck.innerHTML = on
+    ? '<span class="spinner"></span> Scanning Email…'
+    : 'Check This Email';
+}

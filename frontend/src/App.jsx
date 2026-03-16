@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 
-import MetricCards        from './components/MetricCards.jsx'
-import TrendChart         from './components/TrendChart.jsx'
-import DistributionChart  from './components/DistributionChart.jsx'
-import ActivityLog        from './components/ActivityLog.jsx'
-import ScanModal          from './components/ScanModal.jsx'
-import ThreatIntel        from './components/ThreatIntel.jsx'
+import MetricCards           from './components/MetricCards.jsx'
+import TrendChart            from './components/TrendChart.jsx'
+import DistributionChart     from './components/DistributionChart.jsx'
+import ActivityLog           from './components/ActivityLog.jsx'
+import ScanModal             from './components/ScanModal.jsx'
+import ThreatIntel           from './components/ThreatIntel.jsx'
+import MessageScanner        from './components/MessageScanner.jsx'
+import MessageActivityLog    from './components/MessageActivityLog.jsx'
+import MessageDetailModal    from './components/MessageDetailModal.jsx'
 
 const API_URL = 'http://localhost:5001'
 
@@ -61,6 +64,70 @@ function SecurityGlimpse({ scans }) {
         <div className="glimpse-val">{stats.topAttack ? stats.topAttack[0] : '—'}</div>
         <div className="glimpse-label">
           Most Common Attack{stats.topAttack ? ` (${stats.topAttack[1]}×)` : ''}
+        </div>
+        <div className="glimpse-icon">🎯</div>
+      </div>
+    </div>
+  )
+}
+
+// ── Message Glimpse — summary stats for message scans ────────────────────────
+function MessageGlimpse({ scans }) {
+  const stats = useMemo(() => {
+    if (!scans.length) return null
+
+    const phishing   = scans.filter(s => s.status === 'Phishing').length
+    const suspicious = scans.filter(s => s.status === 'Suspicious').length
+    const safe       = scans.filter(s => s.status === 'Safe').length
+
+    // Count indicator frequency
+    const indFreq = { urgency: 0, credential_request: 0, impersonation: 0, financial_scam: 0, suspicious_links: 0 }
+    scans.forEach(s => {
+      const ind = s.indicators || {}
+      if (ind.urgency)            indFreq.urgency++
+      if (ind.credential_request) indFreq.credential_request++
+      if (ind.impersonation)      indFreq.impersonation++
+      if (ind.financial_scam)     indFreq.financial_scam++
+      if (ind.suspicious_links?.length) indFreq.suspicious_links++
+    })
+
+    const topInd = Object.entries(indFreq).sort((a, b) => b[1] - a[1])[0]
+    const indLabels = {
+      urgency: 'Urgency', credential_request: 'Credential Harvesting',
+      impersonation: 'Impersonation', financial_scam: 'Financial Scam',
+      suspicious_links: 'Suspicious Links',
+    }
+
+    return {
+      phishing, suspicious, safe,
+      topIndicator: topInd && topInd[1] > 0 ? `${indLabels[topInd[0]]}` : '—',
+      topIndicatorCount: topInd ? topInd[1] : 0,
+    }
+  }, [scans])
+
+  if (!stats) return null
+
+  return (
+    <div className="glimpse-grid">
+      <div className="glimpse-card gc-red">
+        <div className="glimpse-val">{stats.phishing}</div>
+        <div className="glimpse-label">Phishing Messages</div>
+        <div className="glimpse-icon">🚨</div>
+      </div>
+      <div className="glimpse-card gc-orange">
+        <div className="glimpse-val">{stats.suspicious}</div>
+        <div className="glimpse-label">Suspicious Messages</div>
+        <div className="glimpse-icon">⚠️</div>
+      </div>
+      <div className="glimpse-card gc-yellow">
+        <div className="glimpse-val">{stats.safe}</div>
+        <div className="glimpse-label">Safe Messages</div>
+        <div className="glimpse-icon">✅</div>
+      </div>
+      <div className="glimpse-card gc-blue">
+        <div className="glimpse-val">{stats.topIndicator}</div>
+        <div className="glimpse-label">
+          Top Indicator{stats.topIndicatorCount > 0 ? ` (${stats.topIndicatorCount}×)` : ''}
         </div>
         <div className="glimpse-icon">🎯</div>
       </div>
@@ -154,10 +221,14 @@ function SectionHead({ icon, title, sub, action }) {
 
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
+  const [activeTab,   setActiveTab]   = useState('url')
   const [history,     setHistory]     = useState([])
+  const [msgHistory,  setMsgHistory]  = useState([])
   const [selected,    setSelected]    = useState(null)
+  const [msgSelected, setMsgSelected] = useState(null)
   const [modelOk,     setModelOk]     = useState(true)
   const [loadingHist, setLoadingHist] = useState(true)
+  const [loadingMsg,  setLoadingMsg]  = useState(true)
 
   // Fetch health + persisted scan history on mount
   useEffect(() => {
@@ -169,13 +240,24 @@ export default function App() {
       .then(r => r.json())
       .then(data => { setHistory(Array.isArray(data) ? data : []); setLoadingHist(false) })
       .catch(() => setLoadingHist(false))
+
+    fetch(`${API_URL}/message-history`)
+      .then(r => r.json())
+      .then(data => { setMsgHistory(Array.isArray(data) ? data : []); setLoadingMsg(false) })
+      .catch(() => setLoadingMsg(false))
   }, [])
 
-  const addScan = (scan) => setHistory(prev => [scan, ...prev])
+  const addScan    = (scan) => setHistory(prev => [scan, ...prev])
+  const addMsgScan = (scan) => setMsgHistory(prev => [scan, ...prev])
 
   const clearHistory = async () => {
     await fetch(`${API_URL}/history`, { method: 'DELETE' }).catch(() => {})
     setHistory([])
+  }
+
+  const clearMsgHistory = async () => {
+    await fetch(`${API_URL}/message-history`, { method: 'DELETE' }).catch(() => {})
+    setMsgHistory([])
   }
 
   return (
@@ -203,70 +285,123 @@ export default function App() {
             </div>
             <button
               className="clear-history-btn"
-              onClick={clearHistory}
-              disabled={history.length === 0}
-              title="Clear all scan history"
+              onClick={activeTab === 'url' ? clearHistory : clearMsgHistory}
+              disabled={activeTab === 'url' ? history.length === 0 : msgHistory.length === 0}
+              title="Clear scan history"
             >
               ↺ Clear
             </button>
           </div>
         </header>
 
-        {/* ── Scanner ── */}
-        <section id="scanner" className="dash-section">
-          <Scanner onResult={addScan} />
-        </section>
+        {/* ── Tab Navigation ── */}
+        <div className="dash-tab-bar">
+          <button
+            className={`dash-tab ${activeTab === 'url' ? 'dash-tab-active' : ''}`}
+            onClick={() => setActiveTab('url')}
+          >
+            🔗 URL Analysis
+          </button>
+          <button
+            className={`dash-tab ${activeTab === 'message' ? 'dash-tab-active' : ''}`}
+            onClick={() => setActiveTab('message')}
+          >
+            💬 Message Analysis
+          </button>
+        </div>
 
-        {/* ── KPI Cards ── */}
-        <section id="metrics" className="dash-section">
-          <SectionHead icon="📊" title="Overview" sub="Real-time threat statistics across all scanned URLs" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : <MetricCards scans={history} />}
-        </section>
+        {/* ════════════════════════════════════════════════════════════════════
+            URL ANALYSIS TAB
+            ════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'url' && (
+          <>
+            {/* ── Scanner ── */}
+            <section id="scanner" className="dash-section">
+              <Scanner onResult={addScan} />
+            </section>
 
-        {/* ── Security Glimpse ── */}
-        {!loadingHist && history.length > 0 && (
-          <section id="glimpse" className="dash-section">
-            <SectionHead icon="🛡" title="Top Security Risks Detected" sub="Aggregated threat intelligence from all scanned URLs" />
-            <SecurityGlimpse scans={history} />
-          </section>
+            {/* ── KPI Cards ── */}
+            <section id="metrics" className="dash-section">
+              <SectionHead icon="📊" title="Overview" sub="Real-time threat statistics across all scanned URLs" />
+              {loadingHist
+                ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
+                : <MetricCards scans={history} />}
+            </section>
+
+            {/* ── Security Glimpse ── */}
+            {!loadingHist && history.length > 0 && (
+              <section id="glimpse" className="dash-section">
+                <SectionHead icon="🛡" title="Top Security Risks Detected" sub="Aggregated threat intelligence from all scanned URLs" />
+                <SecurityGlimpse scans={history} />
+              </section>
+            )}
+
+            {/* ── Charts ── */}
+            <section id="charts" className="dash-section">
+              <SectionHead icon="📈" title="Risk Analytics" sub="Trend analysis and distribution of threat classifications" />
+              {loadingHist
+                ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
+                : (
+                <div className="charts-row">
+                  <div className="chart-col-wide"><TrendChart scans={history} /></div>
+                  <div className="chart-col-narrow"><DistributionChart scans={history} /></div>
+                </div>
+              )}
+            </section>
+
+            {/* ── Activity Log ── */}
+            <section id="log" className="dash-section">
+              <ActivityLog scans={history} onSelect={setSelected} loading={loadingHist} />
+            </section>
+
+            {/* ── Threat Intelligence ── */}
+            <section id="intel" className="dash-section">
+              <SectionHead icon="⚡" title="Threat Intelligence" sub="Pattern analysis derived from detected threats" />
+              {loadingHist
+                ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
+                : <ThreatIntel scans={history} />}
+            </section>
+          </>
         )}
 
-        {/* ── Charts ── */}
-        <section id="charts" className="dash-section">
-          <SectionHead icon="📈" title="Risk Analytics" sub="Trend analysis and distribution of threat classifications" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : (
-            <div className="charts-row">
-              <div className="chart-col-wide"><TrendChart scans={history} /></div>
-              <div className="chart-col-narrow"><DistributionChart scans={history} /></div>
-            </div>
-          )}
-        </section>
+        {/* ════════════════════════════════════════════════════════════════════
+            MESSAGE ANALYSIS TAB
+            ════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'message' && (
+          <>
+            {/* ── Message Scanner ── */}
+            <section id="msg-scanner" className="dash-section">
+              <MessageScanner onResult={addMsgScan} />
+            </section>
 
-        {/* ── Activity Log ── */}
-        <section id="log" className="dash-section">
-          <ActivityLog scans={history} onSelect={setSelected} loading={loadingHist} />
-        </section>
+            {/* ── Message Stats Glimpse ── */}
+            {!loadingMsg && msgHistory.length > 0 && (
+              <section id="msg-glimpse" className="dash-section">
+                <SectionHead icon="🛡" title="Message Threat Overview" sub="Aggregated statistics from all analyzed messages" />
+                <MessageGlimpse scans={msgHistory} />
+              </section>
+            )}
 
-        {/* ── Threat Intelligence ── */}
-        <section id="intel" className="dash-section">
-          <SectionHead icon="⚡" title="Threat Intelligence" sub="Pattern analysis derived from detected threats" />
-          {loadingHist
-            ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
-            : <ThreatIntel scans={history} />}
-        </section>
+            {/* ── Message Scan History ── */}
+            <section id="msg-log" className="dash-section">
+              <MessageActivityLog scans={msgHistory} onSelect={setMsgSelected} loading={loadingMsg} />
+            </section>
+          </>
+        )}
 
         <div className="dashboard-footer">
-          KavachX · AI-Powered Phishing Detection · Random Forest Classifier · 21-feature model
+          KavachX · AI-Powered Phishing Detection · URL Analysis + Message Analysis · DistilBERT + Random Forest
         </div>
       </div>
 
-      {/* ── Scan detail modal ── */}
+      {/* ── URL Scan detail modal ── */}
       {selected && (
         <ScanModal scan={selected} onClose={() => setSelected(null)} />
+      )}
+
+      {/* ── Message detail modal ── */}
+      {msgSelected && (
+        <MessageDetailModal scan={msgSelected} onClose={() => setMsgSelected(null)} />
       )}
     </div>
   )

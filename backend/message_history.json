@@ -1,0 +1,407 @@
+[
+  {
+    "id": "msg-56bf8ba3-85cc-4fe3-93f8-683952ab5008",
+    "type": "message",
+    "timestamp": "2026-03-16T16:15:32Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
+    "id": "msg-b31470ea-3bd5-4ffa-b834-bfba8561d169",
+    "type": "message",
+    "timestamp": "2026-03-16T16:14:58Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
+    "id": "msg-93661e75-4840-4d21-8d00-63b1a8e4b10a",
+    "type": "message",
+    "timestamp": "2026-03-16T15:18:20Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
+    "id": "msg-bb840561-9b79-4cd8-87fe-5ac22f2edc7a",
+    "type": "message",
+    "timestamp": "2026-03-16T15:15:37Z",
+    "risk_score": 0.55,
+    "risk_pct": 55,
+    "label": "suspicious",
+    "status": "Suspicious",
+    "reasons": [
+      "Urgent language detected: 'immediately', 'action required', 'your account has been' (+1 more)",
+      "Credential harvesting request: 'verify your', 'otp'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Exercise caution. Verify the sender before responding.",
+      "steps": [
+        "Verify the sender's email address carefully",
+        "Do not click links \u2014 navigate to the website directly",
+        "Contact the organization through official channels to confirm",
+        "Look for spelling errors or unusual formatting"
+      ],
+      "severity": "warning"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.55,
+    "message_snippet": "Subject: Immediate Action Required \u2013 Your Account Will Be Deleted Today From: security-alert@bank-se...",
+    "full_message_length": 910
+  },
+  {
+    "id": "msg-f003d6f1-ef5a-437d-98c1-fd4c02be8a95",
+    "type": "message",
+    "timestamp": "2026-03-16T15:13:40Z",
+    "risk_score": 0.55,
+    "risk_pct": 55,
+    "label": "suspicious",
+    "status": "Suspicious",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'within 24 hours', 'immediately' (+1 more)",
+      "Credential harvesting request: 'verify your', 'verify your account'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Exercise caution. Verify the sender before responding.",
+      "steps": [
+        "Verify the sender's email address carefully",
+        "Do not click links \u2014 navigate to the website directly",
+        "Contact the organization through official channels to confirm",
+        "Look for spelling errors or unusual formatting"
+      ],
+      "severity": "warning"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.55,
+    "message_snippet": "Subject: Urgent: Your Bank Account Has Been Suspended From: support-update@securebank-verification.c...",
+    "full_message_length": 639
+  },
+  {
+    "id": "msg-2f9a13b1-8a56-4f76-9fee-7effd244b9dc",
+    "type": "message",
+    "timestamp": "2026-03-16T15:11:41Z",
+    "risk_score": 0.0,
+    "risk_pct": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Brand name mentioned: 'google' (no urgency \u2014 low risk)"
+    ],
+    "indicators": {
+      "urgency": false,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.0,
+    "message_snippet": "National Internship Portal< internship@aicte-india.org > Madhura Patil Interview Invitation You have...",
+    "full_message_length": 330
+  },
+  {
+    "id": "msg-e6b0d907-6ee6-4339-9336-d4f488c53f2a",
+    "type": "message",
+    "timestamp": "2026-03-16T15:03:30Z",
+    "risk_score": 0.35,
+    "risk_pct": 35,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "Urgent language detected: 'immediately'",
+      "Financial scam indicators: 'transfer'",
+      "Excessive ALL-CAPS text (11 instances) \u2014 fear/urgency tactic"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.35,
+    "message_snippet": "Dear Investor, With reference to NSE circulars NSE/INSP/46704 dated December 17, 2020, and NSE/INSP/...",
+    "full_message_length": 4986
+  },
+  {
+    "id": "msg-73342ccb-f32b-4766-9a4e-f118c0c69f77",
+    "type": "message",
+    "timestamp": "2026-03-16T14:31:10Z",
+    "risk_score": 0.0,
+    "risk_pct": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "indicators": {
+      "urgency": false,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.0,
+    "message_snippet": "Ai Business Webinar",
+    "full_message_length": 19
+  },
+  {
+    "id": "msg-fb184857-2161-443f-8753-7ff0acf6a081",
+    "type": "message",
+    "timestamp": "2026-03-16T12:27:58Z",
+    "risk_score": 0.55,
+    "risk_pct": 55,
+    "label": "suspicious",
+    "status": "Suspicious",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'within 24 hours', 'immediately' (+1 more)",
+      "Credential harvesting request: 'verify your'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Exercise caution. Verify the sender before responding.",
+      "steps": [
+        "Verify the sender's email address carefully",
+        "Do not click links \u2014 navigate to the website directly",
+        "Contact the organization through official channels to confirm",
+        "Look for spelling errors or unusual formatting"
+      ],
+      "severity": "warning"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.55,
+    "message_snippet": "Subject: Urgent: Your Account Has Been Suspended Dear User, We detected unusual activity on your acc...",
+    "full_message_length": 396
+  },
+  {
+    "id": "msg-e7e5841d-d4ca-4be3-9c10-b71b59df5a9b",
+    "type": "message",
+    "timestamp": "2026-03-16T12:22:08Z",
+    "risk_score": 0.0,
+    "risk_pct": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "indicators": {
+      "urgency": false,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.0,
+    "message_snippet": "Hi team, the project meeting has been moved to 3 PM tomorrow in Conference Room B. Please update you...",
+    "full_message_length": 120
+  },
+  {
+    "id": "msg-7eaf248b-3fc0-4abb-ac32-953bd73ab7c9",
+    "type": "message",
+    "timestamp": "2026-03-16T12:21:59Z",
+    "risk_score": 0.8,
+    "risk_pct": 80,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately'",
+      "Credential harvesting request: 'verify your', 'enter your password'",
+      "Brand impersonation with urgency: 'paypal'",
+      "IP-based link detected: http://192.168.1.50/verify"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [
+        "http://192.168.1.50/verify"
+      ],
+      "impersonation": true,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)",
+        "Do not visit any of the suspicious links identified"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.8,
+    "message_snippet": "URGENT: Your PayPal account has been suspended! Click http://192.168.1.50/verify to verify your iden...",
+    "full_message_length": 200
+  }
+]
