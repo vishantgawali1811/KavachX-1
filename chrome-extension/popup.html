@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CERT-In Anti-Phishing Shield</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 340px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #1e2535;
+    }
+    .header img { width: 28px; height: 28px; }
+    .header-title { font-size: 13px; font-weight: 700; color: #60a5fa; letter-spacing: .4px; }
+    .header-sub   { font-size: 10px; color: #64748b; }
+
+    /* ── URL strip ───────────────────────────────────────────────────────── */
+    .url-strip {
+      padding: 10px 16px;
+      background: #141824;
+      font-size: 11px;
+      color: #94a3b8;
+      word-break: break-all;
+      line-height: 1.5;
+      border-bottom: 1px solid #1e2535;
+    }
+    .url-strip span { color: #cbd5e1; }
+
+    /* ── Risk card ───────────────────────────────────────────────────────── */
+    .risk-card {
+      padding: 20px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* SVG arc meter */
+    .meter-wrap { position: relative; width: 160px; height: 90px; }
+    .meter-wrap svg { overflow: visible; }
+    #arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+    .meter-label {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .meter-pct  { font-size: 26px; font-weight: 800; line-height: 1; }
+    .meter-text { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+    /* verdict chip */
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .verdict.safe       { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+    .verdict.suspicious { background: #2d1f00; color: #fbbf24; border: 1px solid #92400e; }
+    .verdict.phishing   { background: #2d0a0a; color: #f87171; border: 1px solid #991b1b; }
+    .verdict.idle       { background: #1e2535; color: #64748b; border: 1px solid #334155; }
+
+    /* ── Check button ────────────────────────────────────────────────────── */
+    .btn-check {
+      width: 100%;
+      padding: 9px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-check:hover    { background: #1d4ed8; }
+    .btn-check:disabled { background: #1e3a5f; color: #64748b; cursor: default; }
+
+    /* ── Footer actions ─────────────────────────────────────────────────── */
+    .footer {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+    .btn-sm {
+      flex: 1;
+      padding: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid #1e2535;
+      border-radius: 7px;
+      background: #141824;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-sm:hover { border-color: #3b82f6; color: #60a5fa; }
+
+    /* ── Feature mini-list ──────────────────────────────────────────────── */
+    .features {
+      padding: 0 16px 14px;
+      border-top: 1px solid #1e2535;
+    }
+    .features-title {
+      font-size: 10px;
+      color: #475569;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      padding: 10px 0 6px;
+    }
+    .feat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      font-size: 11px;
+      color: #94a3b8;
+      border-bottom: 1px solid #1a2236;
+    }
+    .feat-val { font-weight: 600; color: #cbd5e1; }
+    .feat-val.bad { color: #f87171; }
+
+    /* spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid #1e2535;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="icons/icon48.png" alt="shield" />
+    <div>
+      <div class="header-title">CERT-In Anti-Phishing Shield</div>
+      <div class="header-sub">AI-powered real-time detection</div>
+    </div>
+  </div>
+
+  <!-- Current URL -->
+  <div class="url-strip" id="url-strip">Loading current tab…</div>
+
+  <!-- Risk card -->
+  <div class="risk-card">
+    <!-- Arc meter -->
+    <div class="meter-wrap">
+      <svg width="160" height="90" viewBox="0 0 160 90">
+        <!-- track -->
+        <path d="M 10 88 A 70 70 0 0 1 150 88"
+              fill="none" stroke="#1e2535" stroke-width="12"
+              stroke-linecap="round"/>
+        <!-- fill -->
+        <path id="arc-fill"
+              d="M 10 88 A 70 70 0 0 1 150 88"
+              fill="none" stroke="#3b82f6" stroke-width="12"
+              stroke-linecap="round"
+              stroke-dasharray="219.9"
+              stroke-dashoffset="219.9"/>
+      </svg>
+      <div class="meter-label">
+        <div class="meter-pct" id="meter-pct">—</div>
+        <div class="meter-text">URL Model Risk</div>
+      </div>
+    </div>
+
+    <!-- Verdict chip -->
+    <div class="verdict idle" id="verdict">⬤ &nbsp;Not checked</div>
+
+    <!-- Check button -->
+    <div style="width:100%; padding: 0 0 4px;">
+      <button class="btn-check" id="btn-check">Check This URL</button>
+    </div>
+  </div>
+
+  <!-- Feature highlights (hidden until checked) -->
+  <div class="features" id="features-section" style="display:none;">
+    <div class="features-title">Top Risk Signals</div>
+    <div id="feature-list"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="btn-sm" id="btn-log">�️ Dashboard</button>
+    <button class="btn-sm" id="btn-clear">🗑 Clear Log</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
