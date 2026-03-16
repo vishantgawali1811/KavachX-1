@@ -1,0 +1,50 @@
+# Deepfake Detective - Production Requirements (Python 3.9+)
+
+# Core ML Framework
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+
+# Deep Learning & Feature Extraction
+transformers>=4.35.0
+librosa>=0.10.1
+numpy>=1.24.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+
+# Computer Vision
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+Pillow>=10.0.0
+
+# Web & API
+Flask>=3.0.0
+Flask-CORS>=4.0.0
+Werkzeug>=3.0.0
+requests>=2.31.0
+
+# Frontend Dashboard (Streamlit)
+streamlit>=1.28.0
+streamlit-option-menu>=0.3.6
+streamlit-elements>=0.1.0
+
+# Data Handling
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# Visualization & Explainability
+matplotlib>=3.7.0
+seaborn>=0.13.0
+Pillow>=10.0.0
+
+# PDF & File Generation
+fpdf2>=2.7.0
+pydantic>=2.0.0
+
+# Audio Processing
+soundfile>=0.12.1
+librosa>=0.10.1
+
+# Performance & Testing
+pytest>=7.4.0
+tqdm>=4.65.0

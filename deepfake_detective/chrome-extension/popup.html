@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deepfake Detective</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 360px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #1e2535;
+    }
+    .header img { width: 28px; height: 28px; }
+    .header-title { font-size: 13px; font-weight: 700; color: #a78bfa; letter-spacing: .4px; }
+    .header-sub   { font-size: 10px; color: #64748b; }
+
+    /* ── Tab bar ────────────────────────────────────────────────────────── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid #1e2535;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px 8px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      background: #0f1117;
+      color: #64748b;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-btn:hover { color: #94a3b8; }
+    .tab-btn.active {
+      color: #a78bfa;
+      border-bottom-color: #8b5cf6;
+      background: #141824;
+    }
+
+    /* ── Upload area ────────────────────────────────────────────────────── */
+    .upload-area {
+      padding: 16px;
+    }
+    .drop-zone {
+      border: 2px dashed #1e2535;
+      border-radius: 10px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      background: #141824;
+    }
+    .drop-zone:hover { border-color: #8b5cf6; background: #1a1f30; }
+    .drop-zone.dragover { border-color: #a78bfa; background: #1e1540; }
+    .drop-icon { font-size: 32px; margin-bottom: 8px; }
+    .drop-text { font-size: 12px; color: #94a3b8; }
+    .drop-sub  { font-size: 10px; color: #475569; margin-top: 4px; }
+    .file-input { display: none; }
+
+    .selected-file {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #1a2236;
+      border-radius: 7px;
+      font-size: 11px;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .file-remove {
+      background: none;
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* ── Risk card ───────────────────────────────────────────────────────── */
+    .risk-card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meter-wrap { position: relative; width: 160px; height: 90px; }
+    .meter-wrap svg { overflow: visible; }
+    #arc-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+    .meter-label {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .meter-pct  { font-size: 26px; font-weight: 800; line-height: 1; }
+    .meter-text { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+    /* verdict chip */
+    .verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .verdict.real       { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+    .verdict.uncertain  { background: #2d1f00; color: #fbbf24; border: 1px solid #92400e; }
+    .verdict.deepfake   { background: #2d0a0a; color: #f87171; border: 1px solid #991b1b; }
+    .verdict.idle       { background: #1e2535; color: #64748b; border: 1px solid #334155; }
+
+    /* confidence */
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .confidence-bar {
+      width: 100px;
+      height: 6px;
+      background: #1e2535;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .4s;
+    }
+
+    /* ── Analyze button ─────────────────────────────────────────────────── */
+    .btn-analyze {
+      width: 100%;
+      padding: 10px;
+      background: #7c3aed;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-analyze:hover    { background: #6d28d9; }
+    .btn-analyze:disabled { background: #2e1065; color: #64748b; cursor: default; }
+
+    /* ── Feature mini-list ──────────────────────────────────────────────── */
+    .features {
+      padding: 0 16px 14px;
+      border-top: 1px solid #1e2535;
+    }
+    .features-title {
+      font-size: 10px;
+      color: #475569;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      padding: 10px 0 6px;
+    }
+    .feat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      font-size: 11px;
+      color: #94a3b8;
+      border-bottom: 1px solid #1a2236;
+    }
+    .feat-val { font-weight: 600; color: #cbd5e1; }
+    .feat-val.bad { color: #f87171; }
+    .feat-val.warn { color: #fbbf24; }
+    .feat-val.good { color: #4ade80; }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    .footer {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 14px;
+    }
+    .btn-sm {
+      flex: 1;
+      padding: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid #1e2535;
+      border-radius: 7px;
+      background: #141824;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-sm:hover { border-color: #8b5cf6; color: #a78bfa; }
+
+    /* spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #1e2535;
+      border-top-color: #8b5cf6;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Heatmap preview ─────────────────────────────────────────────────── */
+    .heatmap-section {
+      padding: 8px 16px 12px;
+      border-top: 1px solid #1e2535;
+    }
+    .heatmap-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .heatmap-toggle button {
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid #1e2535;
+      border-radius: 5px;
+      background: #141824;
+      color: #64748b;
+      cursor: pointer;
+    }
+    .heatmap-toggle button.active {
+      border-color: #8b5cf6;
+      color: #a78bfa;
+      background: #1e1540;
+    }
+    .heatmap-img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #1e2535;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="icons/icon48.png" alt="detective" />
+    <div>
+      <div class="header-title">Deepfake Detective</div>
+      <div class="header-sub">AI-powered media forensics</div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-video">&#127909; Video Scan</button>
+    <button class="tab-btn" id="tab-audio">&#127908; Audio Scan</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       VIDEO TAB
+       ═══════════════════════════════════════════ -->
+  <div id="panel-video">
+    <!-- Upload -->
+    <div class="upload-area">
+      <div class="drop-zone" id="video-drop">
+        <div class="drop-icon">&#127909;</div>
+        <div class="drop-text">Drop a video file here or click to browse</div>
+        <div class="drop-sub">MP4, AVI, MOV, MKV, WebM (max 50MB)</div>
+        <input type="file" class="file-input" id="video-input" accept="video/*" />
+      </div>
+      <div class="selected-file" id="video-selected" style="display:none;">
+        <span id="video-filename"></span>
+        <button class="file-remove" id="video-remove">&#x2715;</button>
+      </div>
+    </div>
+
+    <!-- Risk card -->
+    <div class="risk-card" id="video-risk-card" style="display:none;">
+      <div class="meter-wrap">
+        <svg width="160" height="90" viewBox="0 0 160 90">
+          <path d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#1e2535" stroke-width="12"
+                stroke-linecap="round"/>
+          <path id="arc-fill"
+                d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#8b5cf6" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="219.9"
+                stroke-dashoffset="219.9"/>
+        </svg>
+        <div class="meter-label">
+          <div class="meter-pct" id="meter-pct">--</div>
+          <div class="meter-text">Deepfake Risk</div>
+        </div>
+      </div>
+
+      <div class="verdict idle" id="verdict">&#11044; &nbsp;Not analyzed</div>
+
+      <div class="confidence-row" id="confidence-row" style="display:none;">
+        <span>Confidence:</span>
+        <div class="confidence-bar">
+          <div class="confidence-fill" id="confidence-fill"></div>
+        </div>
+        <span id="confidence-text"></span>
+      </div>
+
+      <div style="width:100%; padding: 0 0 4px;">
+        <button class="btn-analyze" id="btn-analyze">Analyze Video</button>
+      </div>
+    </div>
+
+    <!-- Heatmap preview -->
+    <div class="heatmap-section" id="heatmap-section" style="display:none;">
+      <div class="features-title">Grad-CAM Explainability</div>
+      <div class="heatmap-toggle">
+        <button class="active" id="btn-heatmap">Heatmap</button>
+        <button id="btn-original">Original</button>
+      </div>
+      <img class="heatmap-img" id="heatmap-img" />
+    </div>
+
+    <!-- Feature highlights -->
+    <div class="features" id="video-features" style="display:none;">
+      <div class="features-title">Analysis Details</div>
+      <div id="video-feature-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       AUDIO TAB
+       ═══════════════════════════════════════════ -->
+  <div id="panel-audio" style="display:none;">
+    <div class="upload-area">
+      <div class="drop-zone" id="audio-drop">
+        <div class="drop-icon">&#127908;</div>
+        <div class="drop-text">Drop an audio file here or click to browse</div>
+        <div class="drop-sub">WAV, MP3, FLAC, OGG, M4A (max 50MB)</div>
+        <input type="file" class="file-input" id="audio-input" accept="audio/*" />
+      </div>
+      <div class="selected-file" id="audio-selected" style="display:none;">
+        <span id="audio-filename"></span>
+        <button class="file-remove" id="audio-remove">&#x2715;</button>
+      </div>
+    </div>
+
+    <div class="risk-card" id="audio-risk-card" style="display:none;">
+      <div class="meter-wrap">
+        <svg width="160" height="90" viewBox="0 0 160 90">
+          <path d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#1e2535" stroke-width="12"
+                stroke-linecap="round"/>
+          <path id="audio-arc-fill"
+                d="M 10 88 A 70 70 0 0 1 150 88"
+                fill="none" stroke="#8b5cf6" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="219.9"
+                stroke-dashoffset="219.9"/>
+        </svg>
+        <div class="meter-label">
+          <div class="meter-pct" id="audio-meter-pct">--</div>
+          <div class="meter-text">Synthetic Risk</div>
+        </div>
+      </div>
+
+      <div class="verdict idle" id="audio-verdict">&#11044; &nbsp;Not analyzed</div>
+
+      <div class="confidence-row" id="audio-confidence-row" style="display:none;">
+        <span>Confidence:</span>
+        <div class="confidence-bar">
+          <div class="confidence-fill" id="audio-confidence-fill"></div>
+        </div>
+        <span id="audio-confidence-text"></span>
+      </div>
+
+      <div style="width:100%; padding: 0 0 4px;">
+        <button class="btn-analyze" id="btn-analyze-audio">Analyze Audio</button>
+      </div>
+    </div>
+
+    <!-- Audio anomaly details -->
+    <div class="features" id="audio-features" style="display:none;">
+      <div class="features-title">Voice Forensic Indicators</div>
+      <div id="audio-feature-list"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="btn-sm" id="btn-dashboard">&#128202; Dashboard</button>
+    <button class="btn-sm" id="btn-clear">&#128465; Clear History</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

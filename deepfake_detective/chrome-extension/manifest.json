@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Deepfake Detective",
+  "version": "1.0.0",
+  "description": "AI-powered deepfake media detection — detect manipulated video and synthetic audio in real-time.",
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications",
+    "alarms"
+  ],
+
+  "host_permissions": [
+    "http://localhost:5002/*",
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Deepfake Detective — Click to scan media for deepfakes"
+  },
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
