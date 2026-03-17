@@ -140,7 +140,7 @@
 		"build": "npm run clean && npm run compile",
 		"test": "node simple_test.js",
 		"test:engine": "node -e \"const engine = require('./dist/engine/index.js'); console.log('Engine test:', engine.quickScan('sk-1234567890abcdef'));\"",
-		"copy-engine": "node -e \"require('fs').cpSync('engine','dist/engine',{recursive:true})\"",
+		"copy-engine": "node -e \"require('fs').cpSync('../extension/engine','dist/engine',{recursive:true})\"",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts"
 	},
