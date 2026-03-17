@@ -6,7 +6,8 @@
  */
 import { useEffect } from 'react'
 
-function ArcGauge({ pct }) {
+function ArcGauge({ pct, theme }) {
+  const isLight = theme === 'light'
   const color = pct >= 70 ? '#ef4444' : pct >= 40 ? '#f59e0b' : '#10b981'
   const r = 52, cx = 70, cy = 65
   const toRad = d => (d * Math.PI) / 180
@@ -19,6 +20,8 @@ function ArcGauge({ pct }) {
   const track = `M ${arcX(startA)} ${arcY(startA)} A ${r} ${r} 0 1 1 ${arcX(startA + totalA - 0.01)} ${arcY(startA + totalA - 0.01)}`
   const fill = pct > 0 ? `M ${arcX(startA)} ${arcY(startA)} A ${r} ${r} 0 ${largeArc} 1 ${arcX(endA)} ${arcY(endA)}` : ''
   const level = pct >= 70 ? 'High Risk' : pct >= 40 ? 'Moderate Risk' : 'Low Risk'
+  const trackColor = isLight ? '#cbd5e1' : '#1a2540'
+  const labelColor = isLight ? '#64748b' : '#475569'
 
   return (
     <div className="arc-gauge-wrap">
@@ -29,17 +32,17 @@ function ArcGauge({ pct }) {
             <stop offset="100%" stopColor={color} />
           </linearGradient>
         </defs>
-        <path d={track} fill="none" stroke="#1a2540" strokeWidth="8" strokeLinecap="round" />
+        <path d={track} fill="none" stroke={trackColor} strokeWidth="8" strokeLinecap="round" />
         {fill && <path d={fill} fill="none" stroke="url(#msgGaugeGrad)" strokeWidth="8" strokeLinecap="round" />}
         <text x={cx} y={cy - 6} textAnchor="middle" fill={color} fontSize="18" fontWeight="700" fontFamily="Inter, sans-serif">{pct}%</text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fill="#475569" fontSize="7" fontFamily="Inter, sans-serif">PHISHING RISK</text>
+        <text x={cx} y={cy + 12} textAnchor="middle" fill={labelColor} fontSize="7" fontFamily="Inter, sans-serif">PHISHING RISK</text>
       </svg>
       <span className={`arc-level ${pct >= 70 ? 'level-high' : pct >= 40 ? 'level-med' : 'level-low'}`}>{level}</span>
     </div>
   )
 }
 
-export default function MessageDetailModal({ scan, onClose }) {
+export default function MessageDetailModal({ scan, onClose, theme }) {
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -74,7 +77,7 @@ export default function MessageDetailModal({ scan, onClose }) {
         <div className="modal-body">
           {/* Risk Summary */}
           <div className="modal-score-row">
-            <ArcGauge pct={pct} />
+            <ArcGauge pct={pct} theme={theme} />
             <div className="modal-meta">
               <div className="modal-status" style={{ color: statusColor }}>
                 {scan.status === 'Phishing' ? '\uD83D\uDEA8' : scan.status === 'Suspicious' ? '\u26A0\uFE0F' : '\u2705'}&nbsp;{scan.status}

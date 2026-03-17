@@ -28,6 +28,7 @@ const centreTextPlugin = {
     const total = data.datasets[0].data.reduce((a, b) => a + b, 0)
     const phishing = data.datasets[0].data[2]
     const pct = total ? Math.round((phishing / total) * 100) : 0
+    const isLight = chart.config.options?.plugins?.centreText?.isLight
 
     ctx.save()
     ctx.textAlign    = 'center'
@@ -38,14 +39,15 @@ const centreTextPlugin = {
     ctx.fillText(`${pct}%`, cx, cy - 10)
 
     ctx.font         = `500 11px Inter, system-ui, sans-serif`
-    ctx.fillStyle    = '#64748b'
+    ctx.fillStyle    = isLight ? '#475569' : '#64748b'
     ctx.fillText('PHISHING RATE', cx, cy + 14)
 
     ctx.restore()
   },
 }
 
-export default function DistributionChart({ scans }) {
+export default function DistributionChart({ scans, theme }) {
+  const isLight = theme === 'light'
   const total      = scans.length
   const safe       = scans.filter(s => s.status === 'Safe').length
   const suspicious = scans.filter(s => s.status === 'Suspicious').length
@@ -82,10 +84,11 @@ export default function DistributionChart({ scans }) {
     maintainAspectRatio: false,
     cutout: '68%',
     plugins: {
+      centreText: { isLight },
       legend: {
         position: 'bottom',
         labels: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           font: { size: 12, family: 'Inter, sans-serif' },
           padding: 18,
           usePointStyle: true,
@@ -94,10 +97,10 @@ export default function DistributionChart({ scans }) {
         },
       },
       tooltip: {
-        backgroundColor: '#0d1525',
-        titleColor: '#e2e8f0',
-        bodyColor: '#94a3b8',
-        borderColor: '#1e3a5f',
+        backgroundColor: isLight ? '#ffffff' : '#0d1525',
+        titleColor: isLight ? '#1e293b' : '#e2e8f0',
+        bodyColor: isLight ? '#475569' : '#94a3b8',
+        borderColor: isLight ? '#cbd5e1' : '#1e3a5f',
         borderWidth: 1,
         padding: 12,
         cornerRadius: 10,

@@ -9,6 +9,7 @@ import ThreatIntel           from './components/ThreatIntel.jsx'
 import MessageScanner        from './components/MessageScanner.jsx'
 import MessageActivityLog    from './components/MessageActivityLog.jsx'
 import MessageDetailModal    from './components/MessageDetailModal.jsx'
+import { DEMO_SCANS }        from './components/demoData.js'
 
 const API_URL = 'http://localhost:5001'
 
@@ -222,13 +223,22 @@ function SectionHead({ icon, title, sub, action }) {
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [activeTab,   setActiveTab]   = useState('url')
-  const [history,     setHistory]     = useState([])
+  const [history,     setHistory]     = useState(DEMO_SCANS)
   const [msgHistory,  setMsgHistory]  = useState([])
   const [selected,    setSelected]    = useState(null)
   const [msgSelected, setMsgSelected] = useState(null)
   const [modelOk,     setModelOk]     = useState(true)
-  const [loadingHist, setLoadingHist] = useState(true)
+  const [loadingHist, setLoadingHist] = useState(false)
   const [loadingMsg,  setLoadingMsg]  = useState(true)
+  const [theme,       setTheme]       = useState(() => localStorage.getItem('kavach-theme') || 'dark')
+
+  // Apply theme to <html> and persist
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('kavach-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark')
 
   // Fetch health + persisted scan history on mount
   useEffect(() => {
@@ -238,7 +248,11 @@ export default function App() {
 
     fetch(`${API_URL}/history`)
       .then(r => r.json())
-      .then(data => { setHistory(Array.isArray(data) ? data : []); setLoadingHist(false) })
+      .then(data => {
+        const real = Array.isArray(data) ? data : []
+        setHistory(real.length > 0 ? [...real, ...DEMO_SCANS] : DEMO_SCANS)
+        setLoadingHist(false)
+      })
       .catch(() => setLoadingHist(false))
 
     fetch(`${API_URL}/message-history`)
@@ -252,7 +266,7 @@ export default function App() {
 
   const clearHistory = async () => {
     await fetch(`${API_URL}/history`, { method: 'DELETE' }).catch(() => {})
-    setHistory([])
+    setHistory(DEMO_SCANS)
   }
 
   const clearMsgHistory = async () => {
@@ -279,6 +293,9 @@ export default function App() {
           </div>
 
           <div className="topbar-right">
+            <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
             <div className={`status-pill ${modelOk ? 'pill-ok' : 'pill-err'}`}>
               <span className="pulse-dot" />
               <span>{modelOk ? 'Model Online' : 'Model Offline'}</span>
@@ -343,8 +360,8 @@ export default function App() {
                 ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
                 : (
                 <div className="charts-row">
-                  <div className="chart-col-wide"><TrendChart scans={history} /></div>
-                  <div className="chart-col-narrow"><DistributionChart scans={history} /></div>
+                  <div className="chart-col-wide"><TrendChart scans={history} theme={theme} /></div>
+                  <div className="chart-col-narrow"><DistributionChart scans={history} theme={theme} /></div>
                 </div>
               )}
             </section>
@@ -396,12 +413,12 @@ export default function App() {
 
       {/* ── URL Scan detail modal ── */}
       {selected && (
-        <ScanModal scan={selected} onClose={() => setSelected(null)} />
+        <ScanModal scan={selected} onClose={() => setSelected(null)} theme={theme} />
       )}
 
       {/* ── Message detail modal ── */}
       {msgSelected && (
-        <MessageDetailModal scan={msgSelected} onClose={() => setMsgSelected(null)} />
+        <MessageDetailModal scan={msgSelected} onClose={() => setMsgSelected(null)} theme={theme} />
       )}
     </div>
   )

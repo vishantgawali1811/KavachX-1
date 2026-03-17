@@ -5,22 +5,51 @@
  * Each entry mirrors the shape produced by the /predict endpoint
  * plus the derived fields the UI adds (id, timestamp, status).
  */
-import { getStatus } from './featureMeta.js'
+import { getStatus, FEATURE_META } from './featureMeta.js'
 
 const ago = (days, hours = 0, mins = 0) =>
   new Date(Date.now() - days * 86_400_000 - hours * 3_600_000 - mins * 60_000).toISOString()
 
-const mk = (id, url, label, risk_score, ts, features) => ({
-  id,
-  url,
-  label,
-  risk_score,
-  risk_pct: Math.round(risk_score * 100),
-  status: getStatus(risk_score),
-  timestamp: ts,
-  features,
-  isDemo: true,
-})
+const mk = (id, url, label, risk_score, ts, features) => {
+  const status = getStatus(risk_score)
+  const riskPct = Math.round(risk_score * 100)
+
+  // Build security_analysis from structural features that are triggered
+  const structKeys = ['ip', 'https_token', 'prefix_suffix', 'shortening_service', 'suspicious_tld', 'statistical_report']
+  const triggered = structKeys.filter(k => features[k] === 1)
+  const securityAnalysis = triggered.map(k => {
+    const meta = FEATURE_META[k]
+    const sev = riskPct >= 70 ? 'High' : riskPct >= 40 ? 'Medium' : 'Low'
+    return {
+      feature: meta.label,
+      explanation: meta.explain,
+      severity: sev,
+      risk_description: meta.explain,
+      possible_attacks: ['Phishing', 'Credential Harvesting'],
+    }
+  })
+
+  const highestSev = securityAnalysis.length > 0
+    ? (securityAnalysis.some(a => a.severity === 'High') ? 'High' : securityAnalysis.some(a => a.severity === 'Medium') ? 'Medium' : 'Low')
+    : 'None'
+
+  return {
+    id,
+    url,
+    label,
+    risk_score,
+    risk_pct: riskPct,
+    final_score: risk_score,
+    status,
+    timestamp: ts,
+    features,
+    security_analysis: securityAnalysis,
+    highest_severity: highestSev,
+    risk_level: riskPct >= 70 ? 'High' : riskPct >= 40 ? 'Medium' : 'Low',
+    triggered_features_count: triggered.length,
+    isDemo: true,
+  }
+}
 
 export const DEMO_SCANS = [
   mk('d01', 'http://secure-paypal-verify.tk/account/login',       'phishing',   0.93, ago(6, 8),  { ip:0, https_token:1, prefix_suffix:1, shortening_service:0, suspicious_tld:1, statistical_report:0, length_url:50, length_hostname:28, nb_dots:2, nb_hyphens:2, nb_qm:0, nb_percent:0, nb_slash:4, nb_www:0, ratio_digits_url:0, ratio_digits_host:0, char_repeat:3, avg_words_raw:7.5, avg_word_host:9.3, avg_word_path:5.5, phish_hints:2 }),

@@ -35,7 +35,8 @@ function dateLabel(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function TrendChart({ scans }) {
+export default function TrendChart({ scans, theme }) {
+  const isLight = theme === 'light'
   const labels = getLast7Days()
 
   const bucket = (status) =>
@@ -44,6 +45,8 @@ export default function TrendChart({ scans }) {
   const phishingData   = bucket('Phishing')
   const suspiciousData = bucket('Suspicious')
   const safeData       = bucket('Safe')
+
+  const pointBg = isLight ? '#ffffff' : '#080e1c'
 
   const data = {
     labels,
@@ -57,7 +60,7 @@ export default function TrendChart({ scans }) {
         tension: 0.45,
         pointRadius: 4,
         pointBackgroundColor: '#ef4444',
-        pointBorderColor: '#080e1c',
+        pointBorderColor: pointBg,
         pointBorderWidth: 2,
         borderWidth: 2.5,
       },
@@ -70,7 +73,7 @@ export default function TrendChart({ scans }) {
         tension: 0.45,
         pointRadius: 4,
         pointBackgroundColor: '#f59e0b',
-        pointBorderColor: '#080e1c',
+        pointBorderColor: pointBg,
         pointBorderWidth: 2,
         borderWidth: 2.5,
       },
@@ -83,7 +86,7 @@ export default function TrendChart({ scans }) {
         tension: 0.45,
         pointRadius: 4,
         pointBackgroundColor: '#10b981',
-        pointBorderColor: '#080e1c',
+        pointBorderColor: pointBg,
         pointBorderWidth: 2,
         borderWidth: 2.5,
       },
@@ -99,7 +102,7 @@ export default function TrendChart({ scans }) {
         position: 'top',
         align: 'end',
         labels: {
-          color: '#64748b',
+          color: isLight ? '#475569' : '#64748b',
           font: { size: 11, family: 'Inter, system-ui, sans-serif' },
           boxWidth: 10,
           boxHeight: 10,
@@ -110,12 +113,12 @@ export default function TrendChart({ scans }) {
         },
       },
       tooltip: {
-        backgroundColor: '#0d1525',
-        titleColor: '#e2e8f0',
+        backgroundColor: isLight ? '#ffffff' : '#0d1525',
+        titleColor: isLight ? '#1e293b' : '#e2e8f0',
         titleFont: { size: 12, weight: '600', family: 'Inter, sans-serif' },
-        bodyColor: '#94a3b8',
+        bodyColor: isLight ? '#475569' : '#94a3b8',
         bodyFont: { size: 11, family: 'Inter, sans-serif' },
-        borderColor: '#1e3a5f',
+        borderColor: isLight ? '#cbd5e1' : '#1e3a5f',
         borderWidth: 1,
         padding: 12,
         cornerRadius: 10,
@@ -123,10 +126,10 @@ export default function TrendChart({ scans }) {
     },
     scales: {
       x: {
-        grid: { color: 'rgba(30,58,95,0.4)', drawTicks: false },
+        grid: { color: isLight ? 'rgba(203,213,225,0.5)' : 'rgba(30,58,95,0.4)', drawTicks: false },
         border: { display: false },
         ticks: {
-          color: '#475569',
+          color: isLight ? '#64748b' : '#475569',
           font: { size: 11, family: 'Inter, sans-serif' },
           padding: 8,
         },
@@ -135,11 +138,11 @@ export default function TrendChart({ scans }) {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
-          color: '#475569',
+          color: isLight ? '#64748b' : '#475569',
           font: { size: 11, family: 'Inter, sans-serif' },
           padding: 10,
         },
-        grid: { color: 'rgba(30,58,95,0.4)', drawTicks: false },
+        grid: { color: isLight ? 'rgba(203,213,225,0.5)' : 'rgba(30,58,95,0.4)', drawTicks: false },
         border: { display: false },
       },
     },
