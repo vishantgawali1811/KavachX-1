@@ -1694,3 +1694,315 @@ body {
   color: var(--accent2);
   background: var(--accent-glow);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DEEPFAKE DETECTIVE — specific styles
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── File upload input ──────────────────────────────────────────────────────── */
+.file-input-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface2);
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.file-input-label:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+.file-input-icon { font-size: 1.4rem; flex-shrink: 0; }
+.file-input-text { flex: 1; min-width: 0; }
+.file-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-hint  { font-size: 0.82rem; color: var(--text-muted); }
+.file-types { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+/* ── Inline deepfake result ─────────────────────────────────────────────────── */
+.df-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.df-result-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.df-score-circle {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 3px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.df-score-pct { font-size: 1rem; font-weight: 800; }
+.df-verdict-block { flex: 1; }
+.df-verdict-label { font-size: 1.05rem; font-weight: 700; }
+.df-verdict-sub   { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+.df-info-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+.df-info-label { color: var(--text-muted); }
+.df-info-value { color: var(--text); font-weight: 600; }
+.df-findings-block {
+  background: var(--surface3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+.df-findings-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+.df-finding-item { font-size: 0.82rem; color: var(--text); line-height: 1.6; }
+
+/* ── Activity log — deepfake-specific rows/columns ──────────────────────────── */
+.row-deepfake:hover   { background: rgba(239, 68, 68, 0.05); }
+.row-uncertain:hover  { background: rgba(245, 158, 11, 0.04); }
+
+.col-filename   { width: 30%; }
+.col-type       { width: 10%; white-space: nowrap; }
+.col-verdict    { width: 13%; white-space: nowrap; }
+.col-confidence { width: 18%; }
+
+.tbl-filename {
+  display: block;
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+/* ── File type chip ─────────────────────────────────────────────────────────── */
+.file-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.file-type-video {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+.file-type-audio {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+/* ── Deepfake detail modal ──────────────────────────────────────────────────── */
+.df-modal {
+  max-width: 680px;
+}
+.df-modal-verdict {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: var(--radius);
+  background: var(--surface2);
+  margin: 4px 0 16px;
+}
+.df-modal-verdict-icon { font-size: 2rem; line-height: 1; }
+.df-modal-verdict-label {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.df-modal-verdict-score {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.df-modal-confidence { color: var(--text-dim); }
+
+.df-modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.df-modal-info-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.df-modal-info-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.df-modal-info-value {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.df-modal-section  { margin-bottom: 16px; }
+.df-modal-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.df-modal-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.df-modal-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.df-modal-stat-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.df-modal-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.df-modal-audio-score {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.df-modal-audio-checks {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--surface3);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Anomaly cards */
+.df-anomaly-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.df-anomaly-card {
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  border: 1px solid;
+}
+.df-anomaly-high { background: var(--red-bg);    border-color: var(--red-bdr); }
+.df-anomaly-med  { background: var(--yellow-bg); border-color: var(--yellow-bdr); }
+.df-anomaly-ok   { background: var(--green-bg);  border-color: var(--green-bdr); }
+
+.df-anomaly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.df-anomaly-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.df-anomaly-sev {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sev-high { color: var(--red); }
+.sev-medium { color: var(--yellow); }
+.sev-ok  { color: var(--green); }
+
+.df-anomaly-expl { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+
+/* Findings list */
+.df-findings-list { display: flex; flex-direction: column; gap: 6px; }
+.df-finding-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.83rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.df-finding-bullet { color: var(--accent2); flex-shrink: 0; }
+
+/* Demo badge */
+.df-modal-demo-badge {
+  margin-top: 8px;
+  padding: 7px 12px;
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Responsive tweaks for deepfake tab ─────────────────────────────────────── */
+@media (max-width: 860px) {
+  .df-modal-info-grid  { grid-template-columns: repeat(2, 1fr); }
+  .df-modal-grid-2     { grid-template-columns: repeat(2, 1fr); }
+  .df-anomaly-grid     { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .df-modal-info-grid  { grid-template-columns: 1fr; }
+  .df-modal-grid-2     { grid-template-columns: repeat(2, 1fr); }
+}
