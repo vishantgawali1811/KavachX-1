@@ -9,7 +9,12 @@ import ThreatIntel           from './components/ThreatIntel.jsx'
 import MessageScanner        from './components/MessageScanner.jsx'
 import MessageActivityLog    from './components/MessageActivityLog.jsx'
 import MessageDetailModal    from './components/MessageDetailModal.jsx'
+import DeepfakeScanner       from './components/DeepfakeScanner.jsx'
+import DeepfakeActivityLog   from './components/DeepfakeActivityLog.jsx'
+import DeepfakeDetailModal   from './components/DeepfakeDetailModal.jsx'
+import DfMetricCards         from './components/DfMetricCards.jsx'
 import { DEMO_SCANS }        from './components/demoData.js'
+import { DEMO_DF_SCANS }     from './components/dfDemoData.js'
 
 const API_URL = 'http://localhost:5001'
 
@@ -136,6 +141,53 @@ function MessageGlimpse({ scans }) {
   )
 }
 
+// ── Deepfake Glimpse — summary stats for deepfake scans ──────────────────────
+function DeepfakeGlimpse({ scans }) {
+  const stats = useMemo(() => {
+    if (!scans.length) return null
+
+    const deepfakes = scans.filter(s => s.verdict === 'Deepfake').length
+    const uncertain = scans.filter(s => s.verdict === 'Uncertain').length
+    const real      = scans.filter(s => s.verdict === 'Real').length
+
+    const videoScans = scans.filter(s => s.file_type === 'video').length
+    const audioScans = scans.filter(s => s.file_type === 'audio').length
+
+    const avgScore = scans.length
+      ? (scans.reduce((sum, s) => sum + (s.risk_pct ?? Math.round(s.final_score * 100)), 0) / scans.length).toFixed(1)
+      : 0
+
+    return { deepfakes, uncertain, real, videoScans, audioScans, avgScore }
+  }, [scans])
+
+  if (!stats) return null
+
+  return (
+    <div className="glimpse-grid">
+      <div className="glimpse-card gc-red">
+        <div className="glimpse-val">{stats.deepfakes}</div>
+        <div className="glimpse-label">Deepfakes Detected</div>
+        <div className="glimpse-icon">🚨</div>
+      </div>
+      <div className="glimpse-card gc-yellow">
+        <div className="glimpse-val">{stats.uncertain}</div>
+        <div className="glimpse-label">Uncertain Results</div>
+        <div className="glimpse-icon">⚠️</div>
+      </div>
+      <div className="glimpse-card gc-orange">
+        <div className="glimpse-val">{stats.avgScore}%</div>
+        <div className="glimpse-label">Avg. Risk Score</div>
+        <div className="glimpse-icon">📊</div>
+      </div>
+      <div className="glimpse-card gc-blue">
+        <div className="glimpse-val">{stats.videoScans}V / {stats.audioScans}A</div>
+        <div className="glimpse-label">Video / Audio Scans</div>
+        <div className="glimpse-icon">🎬</div>
+      </div>
+    </div>
+  )
+}
+
 // ── URL Scanner card ──────────────────────────────────────────────────────────
 function Scanner({ onResult }) {
   const [url, setUrl]       = useState('')
@@ -225,11 +277,14 @@ export default function App() {
   const [activeTab,   setActiveTab]   = useState('url')
   const [history,     setHistory]     = useState(DEMO_SCANS)
   const [msgHistory,  setMsgHistory]  = useState([])
+  const [dfHistory,   setDfHistory]   = useState(DEMO_DF_SCANS)
   const [selected,    setSelected]    = useState(null)
   const [msgSelected, setMsgSelected] = useState(null)
+  const [dfSelected,  setDfSelected]  = useState(null)
   const [modelOk,     setModelOk]     = useState(true)
   const [loadingHist, setLoadingHist] = useState(false)
   const [loadingMsg,  setLoadingMsg]  = useState(true)
+  const [loadingDf,   setLoadingDf]   = useState(false)
   const [theme,       setTheme]       = useState(() => localStorage.getItem('kavach-theme') || 'dark')
 
   // Apply theme to <html> and persist
@@ -259,10 +314,20 @@ export default function App() {
       .then(r => r.json())
       .then(data => { setMsgHistory(Array.isArray(data) ? data : []); setLoadingMsg(false) })
       .catch(() => setLoadingMsg(false))
+
+    fetch(`${API_URL}/deepfake-history`)
+      .then(r => r.json())
+      .then(data => {
+        const real = Array.isArray(data) ? data : []
+        setDfHistory(real.length > 0 ? [...real, ...DEMO_DF_SCANS] : DEMO_DF_SCANS)
+        setLoadingDf(false)
+      })
+      .catch(() => setLoadingDf(false))
   }, [])
 
   const addScan    = (scan) => setHistory(prev => [scan, ...prev])
   const addMsgScan = (scan) => setMsgHistory(prev => [scan, ...prev])
+  const addDfScan  = (scan) => setDfHistory(prev => [scan, ...prev])
 
   const clearHistory = async () => {
     await fetch(`${API_URL}/history`, { method: 'DELETE' }).catch(() => {})
@@ -272,6 +337,11 @@ export default function App() {
   const clearMsgHistory = async () => {
     await fetch(`${API_URL}/message-history`, { method: 'DELETE' }).catch(() => {})
     setMsgHistory([])
+  }
+
+  const clearDfHistory = async () => {
+    await fetch(`${API_URL}/deepfake-history`, { method: 'DELETE' }).catch(() => {})
+    setDfHistory(DEMO_DF_SCANS)
   }
 
   return (
@@ -302,8 +372,8 @@ export default function App() {
             </div>
             <button
               className="clear-history-btn"
-              onClick={activeTab === 'url' ? clearHistory : clearMsgHistory}
-              disabled={activeTab === 'url' ? history.length === 0 : msgHistory.length === 0}
+              onClick={activeTab === 'url' ? clearHistory : activeTab === 'message' ? clearMsgHistory : clearDfHistory}
+              disabled={activeTab === 'url' ? history.length === 0 : activeTab === 'message' ? msgHistory.length === 0 : dfHistory.length === 0}
               title="Clear scan history"
             >
               ↺ Clear
@@ -324,6 +394,12 @@ export default function App() {
             onClick={() => setActiveTab('message')}
           >
             💬 Message Analysis
+          </button>
+          <button
+            className={`dash-tab ${activeTab === 'deepfake' ? 'dash-tab-active' : ''}`}
+            onClick={() => setActiveTab('deepfake')}
+          >
+            🎬 Deepfake Detective
           </button>
         </div>
 
@@ -406,8 +482,41 @@ export default function App() {
           </>
         )}
 
+        {/* ════════════════════════════════════════════════════════════════════
+            DEEPFAKE DETECTIVE TAB
+            ════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'deepfake' && (
+          <>
+            {/* ── Deepfake Scanner ── */}
+            <section id="df-scanner" className="dash-section">
+              <DeepfakeScanner onResult={addDfScan} />
+            </section>
+
+            {/* ── KPI Cards ── */}
+            <section id="df-metrics" className="dash-section">
+              <SectionHead icon="📊" title="Overview" sub="Real-time deepfake detection statistics across all analyzed media" />
+              {loadingDf
+                ? <div className="data-loading"><span className="spinner" /> Loading history…</div>
+                : <DfMetricCards scans={dfHistory} />}
+            </section>
+
+            {/* ── Deepfake Glimpse ── */}
+            {!loadingDf && dfHistory.length > 0 && (
+              <section id="df-glimpse" className="dash-section">
+                <SectionHead icon="🎭" title="Deepfake Threat Overview" sub="Aggregated statistics from all analyzed media files" />
+                <DeepfakeGlimpse scans={dfHistory} />
+              </section>
+            )}
+
+            {/* ── Media Scan Log ── */}
+            <section id="df-log" className="dash-section">
+              <DeepfakeActivityLog scans={dfHistory} onSelect={setDfSelected} loading={loadingDf} />
+            </section>
+          </>
+        )}
+
         <div className="dashboard-footer">
-          KavachX · AI-Powered Phishing Detection · URL Analysis + Message Analysis · DistilBERT + Random Forest
+          KavachX · AI-Powered Threat Detection · URL Analysis + Message Analysis + Deepfake Detective · DistilBERT + Random Forest + DeepfakeDetector
         </div>
       </div>
 
@@ -419,6 +528,11 @@ export default function App() {
       {/* ── Message detail modal ── */}
       {msgSelected && (
         <MessageDetailModal scan={msgSelected} onClose={() => setMsgSelected(null)} theme={theme} />
+      )}
+
+      {/* ── Deepfake detail modal ── */}
+      {dfSelected && (
+        <DeepfakeDetailModal scan={dfSelected} onClose={() => setDfSelected(null)} theme={theme} />
       )}
     </div>
   )
