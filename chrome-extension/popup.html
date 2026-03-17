@@ -4,27 +4,127 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CERT-In Anti-Phishing Shield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       width: 340px;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
       background: #0f1117;
       color: #e2e8f0;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── Header ─────────────────────────────────────────────────────────── */
     .header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid #1e2535;
+      justify-content: space-between;
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
     }
-    .header img { width: 28px; height: 28px; }
-    .header-title { font-size: 13px; font-weight: 700; color: #60a5fa; letter-spacing: .4px; }
-    .header-sub   { font-size: 10px; color: #64748b; }
+
+    /* Subtle radial glow behind header */
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: -40px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 3D logo container */
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(145deg, #1a1f2e, #141824);
+      border: 1px solid rgba(96,165,250,0.25);
+      border-radius: 10px;
+      box-shadow:
+        0 0 14px rgba(96,165,250,0.12),
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+    .logo-mark:hover {
+      box-shadow:
+        0 0 20px rgba(96,165,250,0.2),
+        0 6px 12px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+
+    .header-info { display: flex; flex-direction: column; gap: 2px; }
+    .header-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f0f2f8;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+    .header-title .brand-highlight {
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-sub {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+
+    /* Status pill */
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: #181c26;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      position: relative;
+      z-index: 1;
+      transition: all 0.2s ease;
+    }
+    .status-pill.active {
+      border-color: rgba(74,222,128,0.3);
+      color: #4ade80;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: breathe 2.4s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+      50%      { opacity: 0.7; box-shadow: 0 0 0 4px rgba(74,222,128,0); }
+    }
 
     /* ── Tab bar ────────────────────────────────────────────────────────── */
     .tab-bar {
@@ -34,7 +134,7 @@
     .tab-btn {
       flex: 1;
       padding: 9px 8px;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
       font-size: 12px;
       font-weight: 600;
       background: #0f1117;
@@ -192,10 +292,37 @@
 
   <!-- Header -->
   <div class="header">
-    <img src="icons/icon48.png" alt="shield" />
-    <div>
-      <div class="header-title">KavachX Anti-Phishing Shield</div>
-      <div class="header-sub">AI-powered real-time detection</div>
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <defs>
+            <linearGradient id="shieldGrad" x1="3" y1="2" x2="21" y2="23" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#60a5fa"/>
+              <stop offset="1" stop-color="#a78bfa"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="1" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.16 9 11.25C17.25 22.16 21 17.25 21 12V7L12 2z"
+                fill="url(#shieldGrad)" filter="url(#glow)" opacity="0.9"/>
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.16 9 11.25C17.25 22.16 21 17.25 21 12V7L12 2z"
+                fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+          <path d="M8.5 12.5l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+        </svg>
+      </div>
+      <div class="header-info">
+        <div class="header-title"><span class="brand-highlight">KavachX</span> Anti-Phishing</div>
+        <div class="header-sub">AI-powered real-time detection</div>
+      </div>
+    </div>
+    <div class="status-pill active" id="statusPill">
+      <span class="status-dot"></span>
+      <span>Active</span>
     </div>
   </div>
 
