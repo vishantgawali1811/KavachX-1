@@ -6,6 +6,11 @@
 //   c) webNavigation fallback for pages where content.js didn't fire
 
 const API = 'http://localhost:5001/predict';
+const VAPI_API = 'https://api.vapi.ai/call/phone';
+const VAPI_KEY = '42489716-87c7-49dc-aed5-c02bb9ad058c';
+const VAPI_PHONE_NUMBER_ID = 'b5094ae4-070c-43a7-afd0-e195c05e801b';   // +12192595035
+const VAPI_ASSISTANT_ID    = '7c55e2e0-4b6f-41f3-bd94-bde7ad1f7bda';   // KavachX assistant
+const CUSTOMER_PHONE       = '+919930594182';
 
 const BADGE = {
   safe:       { color: '#16a34a', text: '✓'  },
@@ -31,7 +36,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === 'RESULT') {
     applyBadge(message.data);
     const score = message.data.url_score ?? message.data.risk_score ?? 0;
-    if (score >= 0.70) injectWarning(message.data);
+    if (score >= 0.70) {
+      // Get the active tab to inject warning + trigger Vapi call
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        const tabId = tab?.id;
+        injectWarning(message.data, tabId);
+        triggerVapiCall(message.data, tabId);
+      });
+    }
   }
 });
 
@@ -67,8 +79,13 @@ async function analyzePageContent(pageData, tabId) {
     applyBadge(result, tabId);
     saveToLog(result);
 
-    const score = result.final_score ?? result.risk_score ?? 0;
-    if (score >= 0.70) injectWarning(result, tabId);
+    // Use url_score (ML model) for triggering — final_score gets diluted
+    // when structural/content scores are 0
+    const urlScore = result.url_score ?? result.risk_score ?? 0;
+    if (urlScore >= 0.70) {
+      injectWarning(result, tabId);
+      triggerVapiCall(result, tabId);
+    }
   } catch (_) {
     if (tabId) chrome.action.setBadgeText({ text: '', tabId });
   }
@@ -126,5 +143,116 @@ function saveToLog(data) {
     });
     if (phishLog.length > 500) phishLog.length = 500;
     chrome.storage.local.set({ phishLog });
+  });
+}
+
+
+// ── Vapi phone call — triggers when risk >= 70 ──────────────────────────────
+async function triggerVapiCall(data, tabId) {
+  const phone = CUSTOMER_PHONE;
+
+  console.log('KavachX: Placing Vapi call to', phone, 'from +12192595035');
+
+  try {
+    const res = await fetch(VAPI_API, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${VAPI_KEY}`,
+      },
+      body: JSON.stringify({
+        assistantId:   VAPI_ASSISTANT_ID,
+        phoneNumberId: VAPI_PHONE_NUMBER_ID,
+        assistantOverrides: {
+          firstMessageMode: 'assistant-speaks-first'
+        },
+        customer: {
+          number: phone
+        }
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => 'unknown');
+      console.error('KavachX: Vapi call failed:', res.status, errText);
+      activateSecurityLock(tabId, data);
+      return;
+    }
+
+    const callData = await res.json();
+    console.log('KavachX: Vapi call initiated, ID:', callData.id);
+
+    // Poll for call completion, then activate security lock
+    pollCallStatus(callData.id, tabId, data);
+
+  } catch (err) {
+    console.error('KavachX: Vapi call error:', err);
+    activateSecurityLock(tabId, data);
+  }
+}
+
+
+// ── Poll Vapi call status until ended ───────────────────────────────────────
+async function pollCallStatus(callId, tabId, data) {
+  const MAX_POLLS = 60;  // up to 5 minutes (60 * 5s)
+  let polls = 0;
+
+  const check = async () => {
+    polls++;
+    try {
+      const res = await fetch(`https://api.vapi.ai/call/${callId}`, {
+        headers: { 'Authorization': `Bearer ${VAPI_KEY}` },
+      });
+
+      if (res.ok) {
+        const callInfo = await res.json();
+        if (callInfo.status === 'ended' || callInfo.status === 'failed') {
+          console.log('KavachX: Vapi call ended, status:', callInfo.status);
+          activateSecurityLock(tabId, data);
+          return;
+        }
+      }
+    } catch (_) { /* continue polling */ }
+
+    if (polls < MAX_POLLS) {
+      setTimeout(check, 5000);
+    } else {
+      // Timeout — activate lock anyway
+      console.warn('KavachX: Vapi call poll timeout — activating security lock.');
+      activateSecurityLock(tabId, data);
+    }
+  };
+
+  // Start polling after initial delay
+  setTimeout(check, 5000);
+}
+
+
+// ── Activate security lock on the tab ────────────────────────────────────────
+function activateSecurityLock(tabId, data) {
+  if (!tabId) return;
+
+  // Check if the tab still exists and is on the same dangerous page
+  chrome.tabs.get(tabId, (tab) => {
+    if (chrome.runtime.lastError || !tab) return;
+
+    const payload = {
+      type:       'SECURITY_LOCK',
+      risk_score: data.url_score ?? data.risk_score ?? 0,
+      url:        data.url,
+      reasons:    data.reasons ?? [],
+    };
+
+    chrome.tabs.sendMessage(tabId, payload).catch(() => {
+      // Content script may not be loaded — inject it first
+      chrome.scripting.executeScript({
+        target: { tabId },
+        files:  ['content.js'],
+      }).then(() => {
+        setTimeout(() => {
+          chrome.tabs.sendMessage(tabId, payload).catch(() => {});
+        }, 500);
+      }).catch(() => {});
+    });
   });
 }
