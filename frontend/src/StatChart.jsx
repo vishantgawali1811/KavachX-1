@@ -10,7 +10,8 @@ import { Bar } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
-export default function StatChart({ features }) {
+export default function StatChart({ features, theme }) {
+  const isLight = theme === 'light'
   const labels = features.map(f => f.label)
   const maxVal = Math.max(...features.map(f => f.value), 1)
   const normalizedValues = features.map(f => parseFloat(((f.value / maxVal) * 100).toFixed(1)))
@@ -57,7 +58,7 @@ export default function StatChart({ features }) {
         position: 'top',
         align: 'end',
         labels: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           font: { size: 11, family: 'Inter, system-ui, sans-serif' },
           boxWidth: 12,
           boxHeight: 12,
@@ -67,12 +68,12 @@ export default function StatChart({ features }) {
         },
       },
       tooltip: {
-        backgroundColor: '#0e1420',
-        titleColor: '#f1f5f9',
+        backgroundColor: isLight ? '#ffffff' : '#0e1420',
+        titleColor: isLight ? '#1e293b' : '#f1f5f9',
         titleFont: { size: 12, weight: '600' },
-        bodyColor: '#94a3b8',
+        bodyColor: isLight ? '#475569' : '#94a3b8',
         bodyFont: { size: 11 },
-        borderColor: '#1e2d47',
+        borderColor: isLight ? '#cbd5e1' : '#1e2d47',
         borderWidth: 1,
         padding: 12,
         cornerRadius: 8,
@@ -89,10 +90,10 @@ export default function StatChart({ features }) {
       x: {
         min: 0,
         max: 100,
-        grid: { color: 'rgba(30,45,71,0.5)', drawTicks: false },
+        grid: { color: isLight ? 'rgba(203,213,225,0.5)' : 'rgba(30,45,71,0.5)', drawTicks: false },
         border: { display: false },
         ticks: {
-          color: '#475569',
+          color: isLight ? '#64748b' : '#475569',
           font: { size: 10, family: 'Inter, system-ui, sans-serif' },
           padding: 6,
           stepSize: 25,
@@ -102,7 +103,7 @@ export default function StatChart({ features }) {
         grid: { display: false },
         border: { display: false },
         ticks: {
-          color: '#94a3b8',
+          color: isLight ? '#475569' : '#94a3b8',
           font: { size: 11, family: 'Inter, system-ui, sans-serif' },
           padding: 12,
           crossAlign: 'far',

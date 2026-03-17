@@ -90,7 +90,7 @@ export default function ThreatIntel({ scans }) {
                       className="intel-row-fill"
                       style={{
                         width: `${pct(ind.count, phishingScans.length)}%`,
-                        background: ind.count > 0 ? '#ef4444' : '#1e3a5f',
+                        background: ind.count > 0 ? '#ef4444' : 'var(--surface4)',
                       }}
                     />
                   </div>
