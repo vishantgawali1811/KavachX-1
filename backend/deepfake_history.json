@@ -1,5 +1,118 @@
 [
   {
+    "id": "df-92ece14b-d34c-46a7-b3bd-d80391f1f422",
+    "filename": "WhatsApp Video 2026-03-17 at 9.41.09 AM.mp4",
+    "timestamp": "2026-03-17T04:38:58Z",
+    "final_score": 0.859,
+    "risk_pct": 86,
+    "verdict": "Deepfake",
+    "status": "Deepfake",
+    "confidence": "86% +/- 4%",
+    "file_type": "video",
+    "fusion_alpha": 0.6,
+    "fusion_beta": 0.4,
+    "video_analysis": {
+      "frame_count": 87,
+      "mc_mean": 0.904,
+      "mc_std": 0.0532,
+      "faces_detected": true,
+      "mean_score": 0.9,
+      "max_score": 0.9604
+    },
+    "audio_analysis": {
+      "combined_score": 0.7738,
+      "mean_score": 0.7738,
+      "std_score": 0.0389,
+      "anomalies": {
+        "pitch_stability": {
+          "detected": true,
+          "severity": "High",
+          "explanation": "Pitch remains unnaturally steady across phrases \u2014 synthetic TTS pattern"
+        },
+        "breath_patterns": {
+          "detected": true,
+          "severity": "Medium",
+          "explanation": "Missing natural breathing artifacts between phrases"
+        },
+        "spectral_flatness": {
+          "detected": true,
+          "severity": "High",
+          "explanation": "Spectral flatness exceeds natural speech threshold"
+        },
+        "frequency_cutoff": {
+          "detected": true,
+          "severity": "Medium",
+          "explanation": "Abrupt frequency cutoff detected \u2014 typical synthesis artefact"
+        }
+      },
+      "triggered_count": 4,
+      "total_checks": 4
+    },
+    "explanations": [
+      "Fused video (86%) and audio (77%) with weights 0.6/0.4",
+      "Video model detected manipulation with 86% confidence (+/-4%)",
+      "Face manipulation artefacts detected in facial region",
+      "Pitch remains unnaturally steady across phrases \u2014 synthetic TTS pattern",
+      "Missing natural breathing artifacts between phrases",
+      "Spectral flatness exceeds natural speech threshold",
+      "Abrupt frequency cutoff detected \u2014 typical synthesis artefact"
+    ]
+  },
+  {
+    "id": "df-14964078-cf5f-4dc4-8303-d3522ef42ea7",
+    "filename": "Recording 2026-03-17 095030.mp4",
+    "timestamp": "2026-03-17T04:38:50Z",
+    "final_score": 0.6356,
+    "risk_pct": 64,
+    "verdict": "Uncertain",
+    "status": "Uncertain",
+    "confidence": "64% +/- 8%",
+    "file_type": "video",
+    "fusion_alpha": 0.6,
+    "fusion_beta": 0.4,
+    "video_analysis": {
+      "frame_count": 147,
+      "mc_mean": 0.6137,
+      "mc_std": 0.036,
+      "faces_detected": true,
+      "mean_score": 0.5912,
+      "max_score": 0.7019
+    },
+    "audio_analysis": {
+      "combined_score": 0.5455,
+      "mean_score": 0.5455,
+      "std_score": 0.0611,
+      "anomalies": {
+        "pitch_stability": {
+          "detected": false,
+          "severity": "OK",
+          "explanation": "Natural pitch variation detected"
+        },
+        "breath_patterns": {
+          "detected": false,
+          "severity": "OK",
+          "explanation": "Normal breathing patterns present"
+        },
+        "spectral_flatness": {
+          "detected": true,
+          "severity": "Medium",
+          "explanation": "Spectral flatness exceeds natural speech threshold"
+        },
+        "frequency_cutoff": {
+          "detected": false,
+          "severity": "OK",
+          "explanation": "Full frequency range present"
+        }
+      },
+      "triggered_count": 1,
+      "total_checks": 4
+    },
+    "explanations": [
+      "Fused video (64%) and audio (55%) with weights 0.6/0.4",
+      "Inconclusive \u2014 manual review recommended"
+    ]
+  },
+  {
     "id": "df-5b3d6f2b-7c44-4449-9f57-f14cb212b99b",
     "filename": "sample-5s.mp4",
     "timestamp": "2026-03-17T04:22:02Z",

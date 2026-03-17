@@ -1,125 +1,314 @@
-# ml-url-phishing-classifier
+# KavachX — AI-Powered Cybersecurity Intelligence Platform
+
+KavachX is a comprehensive cybersecurity platform that combines **phishing URL detection**, **phishing message/email analysis**, and **deepfake media detection** into a unified intelligence dashboard. It is delivered through a React web dashboard and a Chrome browser extension with real-time protection and voice alert capabilities.
+
+---
 
 ## Features
-1. ML Model Creation: Trains an ML model selected URL features.
-2. ML Model Tuning: Tunes the created ML model with hyperparameter-tuning.
-3. URL Classification: Identify if a provided URL is phishing or legitimate
-4. Feature Extraction: Parses a URL for structural and statistical data used for analysis.
-5. Data Preprocessing: Parses, transforms, and splits a raw dataset into additional datasets used for train-validation and testing the ML model.
-6. Data Visualization: Generates graphical plots to illustrate the feature distribution, feature correlation, and feature importance. 
 
-## Introduction
-This application is a machine-learning-based phishing URL detection tool designed to classify URLs as legitimate or phishing based on extracted URL features. The underlying model is trained using the Random Forest Classification algorithm based on extracted structural and statistical data. Both structural and statistical data are extracted from links entered into the application and processed by the model for a resulting classification (legitimate/phishing).
+### 1. URL Phishing Detection
+- **Random Forest ML Model** trained on 11,430 URLs with 21 extracted features (structural + statistical)
+- **Hybrid three-layer scoring**: URL model (40%) + DOM structural analysis (30%) + NLP content analysis (30%)
+- **DistilBERT NLP** (`cybersectony/phishing-email-detection-distilbert_v2.4.3`) for page content classification
+- Real-time scanning with detailed threat breakdown and feature-level explanations
 
-Structural features are binary components that identify whether the feature is present or absent within a URL. An example structural feature is 'ip', which indicates whether the main hostname is an IP address or not. The structural features with clearly distinct distributions between each class were selected in order to understand the data better. Using the same example of the 'ip' structural feature, the Structural Feature Distribution visualization indicated that encountering websites with IP addresses as their hostname was more likely to be classified as phishing than legitimate.
+### 2. Message / Email Phishing Analysis
+- **DistilBERT NLP** + keyword heuristic fusion scoring
+- Detects: urgency language, credential harvesting, brand impersonation, financial scams, AI-generated content, suspicious links
+- Actionable recommendations with severity-based steps
 
-Statistical features are non-binary URL components such as the length of a URL, the average words in the path, or the number of slashes in the URL for example. These features are useful to identify trends where particular features are present in both classes but in distinguishable averaged amounts that can help the ML model perform classifications accurately. Within the Statistical Feature Distribution visualization, phishing URLs were found to have much longer URL lengths in comparison to legitimate URLs for example. The mean URL length of phishing URLs was 74.87 and the mean URL length of legitimate URLs was 47.87 from the visualizations included in this repository.
+### 3. Deepfake Media Detection
+- Upload video (`.mp4`, `.avi`, `.mov`, `.mkv`, `.webm`) or audio (`.wav`, `.mp3`, `.ogg`, `.flac`, `.aac`) files
+- Heuristic analysis engine with video frame analysis and audio anomaly detection
+- Audio anomaly checks: pitch stability, breath patterns, spectral flatness, frequency cutoff
+- Fusion scoring with configurable video/audio weights
+
+### 4. Chrome Extension — Real-Time Browser Protection
+- **Manifest V3** extension injected into every page
+- Automatic page analysis on navigation (extracts URL, DOM features, page content)
+- Color-coded badge (green/yellow/red) based on threat level
+- Phishing warning banner for medium-risk pages
+- **Form guard** — intercepts password submissions on high-risk pages with a confirmation overlay
+- **Security lock** — full-screen page lockdown for confirmed threats
+- **Vapi voice alert** — automated phone call warning when URL risk >= 70%
+- Built-in popup with URL scan + message scan + settings
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, Vite, Chart.js, html2canvas, jsPDF |
+| **Backend** | Python, Flask, Flask-CORS |
+| **ML/AI** | scikit-learn (Random Forest), HuggingFace Transformers (DistilBERT), PyTorch |
+| **Extension** | Chrome Manifest V3, Vapi.ai voice API |
+| **Data** | JSON file persistence, joblib model serialization |
+
+---
+
+## Project Structure
+
+```
+kavach-main/
+├── backend/                          # Flask API server (port 5001)
+│   ├── app.py                        # Main application — all API routes
+│   ├── feature_extraction.py         # 21-feature URL extractor
+│   ├── hybrid_analysis.py            # Three-layer hybrid scoring engine
+│   ├── message_analysis.py           # Phishing message detection
+│   ├── attack_knowledge.py           # Feature-to-explanation knowledge base
+│   ├── model.pkl                     # Trained Random Forest model
+│   ├── requirements.txt              # Python dependencies
+│   ├── scan_history.json             # URL scan history
+│   ├── message_history.json          # Message scan history
+│   └── deepfake_history.json         # Deepfake scan history
+│
+├── frontend/                         # React dashboard (Vite)
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── index.html
+│   └── src/
+│       ├── App.jsx                   # Main app — 3-tab dashboard
+│       ├── style.css                 # Global styles (dark/light themes)
+│       └── components/
+│           ├── MetricCards.jsx        # URL scan KPI cards
+│           ├── DfMetricCards.jsx      # Deepfake scan KPI cards
+│           ├── TrendChart.jsx         # Risk trend line chart
+│           ├── DistributionChart.jsx  # Threat classification chart
+│           ├── ActivityLog.jsx        # URL scan history table
+│           ├── MessageActivityLog.jsx # Message scan history table
+│           ├── DeepfakeActivityLog.jsx# Deepfake scan history table
+│           ├── ScanModal.jsx          # URL scan detail modal
+│           ├── MessageDetailModal.jsx # Message scan detail modal
+│           ├── DeepfakeDetailModal.jsx# Deepfake scan detail modal
+│           ├── MessageScanner.jsx     # Message input scanner
+│           ├── DeepfakeScanner.jsx    # File upload deepfake scanner
+│           ├── ThreatIntel.jsx        # Threat intelligence view
+│           ├── demoData.js            # Demo URL scan data
+│           ├── dfDemoData.js          # Demo deepfake scan data
+│           └── featureMeta.js         # Feature metadata definitions
+│
+├── chrome-extension/                 # Chrome Extension (Manifest V3)
+│   ├── manifest.json
+│   ├── background.js                 # Service worker — analysis + Vapi calls
+│   ├── content.js                    # Content script — banners, form guard, lock
+│   ├── popup.html / popup.js         # Extension popup UI
+│   ├── log.html / log.js             # Activity log page
+│   └── icons/
+│
+├── datasets/                         # Training datasets
+│   ├── raw_dataset.csv
+│   ├── testing_dataset.csv
+│   ├── train_validation_dataset.csv
+│   └── transformed_dataset.csv
+│
+├── models/                           # Trained model files
+│   └── tuned_model.joblib
+│
+├── training/                         # Model training scripts
+│   └── train.py
+│
+└── visualizations/                   # Feature distribution & correlation plots
+```
+
+---
+
+## API Endpoints
+
+All endpoints are served by the Flask backend on `http://localhost:5001`.
+
+### URL Analysis
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/predict` | Analyze a URL for phishing risk. Accepts JSON `{ "url": "...", "dom": {...} }` |
+| `GET` | `/history` | Retrieve all URL scan history |
+| `DELETE` | `/history` | Clear URL scan history |
+
+### Message Analysis
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/analyze-message` | Analyze a message/email for phishing. Accepts JSON `{ "message": "..." }` |
+| `GET` | `/message-history` | Retrieve message scan history |
+| `DELETE` | `/message-history` | Clear message scan history |
+
+### Deepfake Detection
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/analyze-deepfake` | Analyze a media file. Accepts `multipart/form-data` with a `file` field |
+| `GET` | `/deepfake-history` | Retrieve deepfake scan history |
+| `DELETE` | `/deepfake-history` | Clear deepfake scan history |
+
+### Utility
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | Service info and available endpoints |
+| `GET` | `/health` | Health check (model status, NLP status) |
+
+---
+
+## Scoring System
+
+### URL Phishing Score
+```
+final_score = 0.40 × url_model_score      (Random Forest)
+            + 0.30 × structural_score      (DOM analysis: forms, passwords, iframes)
+            + 0.30 × content_nlp_score      (DistilBERT or keyword fallback)
+```
+- **>= 70%** → High Risk (red)
+- **40–69%** → Medium Risk (yellow)
+- **< 40%** → Low Risk (green)
+
+### Message Phishing Score
+```
+final_score = 0.70 × nlp_score + 0.30 × heuristic_keyword_score
+```
+
+### Deepfake Score
+```
+final_score = fusion_alpha × video_score + fusion_beta × audio_score
+```
+- **>= 65%** → Deepfake
+- **35–64%** → Uncertain
+- **< 35%** → Authentic (Real)
+
+---
 
 ## Getting Started
 
 ### Prerequisites
-The application requires the following libraries to be installed:
-- [pandas](https://pandas.pydata.org/docs/getting_started/install.html)
-- [NumPy](https://numpy.org/install/)
-- [scikit-learn](https://scikit-learn.org/stable/install.html)
-- [seaborn](https://seaborn.pydata.org/installing.html)
+- **Python 3.10+**
+- **Node.js 18+** and npm
+- **Google Chrome** (for the extension)
 
+### 1. Backend Setup
 
-### Installation
-1. Clone the repository using the following command:
-```
-git clone https://github.com/Trieuh2/ml-url-phishing-classifier/
-```
-2. Install dependencies using the following pip commands:
-```
-pip install pandas
-pip install numpy
-pip install scikit-learn
-pip install seaborn
-```
+```bash
+cd backend
 
-## Data
-The data used in this project consists of extracted URL features that are used to train an ML model via the Random Forest Classification algorithm to identify URLs as phishing or legitimate. The raw dataset was sourced from Abdelhakim Hannousse and Salima Yahiouche (2021) as part of their open-source research study available [here](https://data.mendeley.com/datasets/c2gw7fy2j4/3). The source dataset is named 'dataset_B_05_2020.csv'.
+# Create virtual environment (recommended)
+python -m venv .venv
+source .venv/bin/activate      # Linux/Mac
+# .venv\Scripts\activate       # Windows
 
-The source dataset is a compilation of 11,430 URLs with extracted features such as the URL length, URL hostname, number of dots, number of hyphens, longest words in the hostname, presence of IP address, and more features. Within the dataset, the 'status' column serves as the ground truth, and the ML model is trained to utilize the extracted features to determine the status of the provided URL. 
+# Install dependencies
+pip install -r requirements.txt
 
-The source dataset is balanced with 50% phishing URLs and 50% legitimate URLs. For training and testing, 70% of the raw data was split for training and the remaining 30% of data was used for testing. Within the training and testing datasets, the ratio of class distribution was maintained for a fair assessment.
-
-In the [raw dataset](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/datasets/raw_dataset.csv) used in the project, the source dataset is slightly modified to correct typos in the URL feature names.
-
-## Usage
-
-### Basic Usage
-1. Run the application in a terminal using 'python app.py'
-2. Provide a URL containing "http://" or "https://" for classification.
-3. The application will return the classification result 'phishing', 'legitimate', or return an error if the link was not accessible.
-
-### Advanced Usage
-The application can be modified to train a new ML model using different selected structural and statistical URL features:
-1. Modify the selected features by uncommenting or commenting on the features within the 'structural_features' and 'statistical_features' in the 'setup.py' file.\
-\
-In the example below, the 'ip', 'https_token', 'prefix_suffix', 'shortening_service', 'domain_in_brand', 'suspicious_tld', and 'statistical_report' features are selected.
-      ```
-      structural_features = [
-        'ip',
-        'https_token',
-        # 'punycode',
-        # 'port',
-        # 'tld_in_path',
-        # 'tld_in_subdomain',
-        # 'abnormal_subdomain',
-        'prefix_suffix',
-        'shortening_service',
-        'domain_in_brand',
-        # 'brand_in_subdomain',
-        # 'brand_in_path',
-        'suspicious_tld',
-        'statistical_report'
-      ]
-      ```
-2. Run 'setup.py' to perform the following the following:
-    - Overwrite the transformed dataset, train-validation dataset, and testing dataset in the 'datasets' folder
-    - Overwrite the feature distribution and feature correlation visualizations in the 'visualizations' folder
-    - Overwrite untuned and hyperparameter-tuned models in the 'models' folder
-    - Overwrite .txt files containing the untuned and tuned model performance metrics from evaluations in the 'models' folder
-3. Select the same features in step 1 but in the 'app.py' file
-4. Run 'app.py'
-6. Provide a URL containing "http://" or "https://" for classification
-7. The application will return the classification result 'phishing', 'legitimate', or return an error if the link was not accessible.
-
-To run a 'legitimate' URL example, use: "https://www.google.com" or a website you have safely visited before.
-
-To run a 'phishing' URL example, an accessible link can be found via the [raw_dataset.csv](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/datasets/raw_dataset.csv) file. The application safely performs feature extraction offline and does not perform any web requests to any links entered into the application.
-
-## Results
-After training the ML model on the Random Forest Classification algorithm and performing hyperparameter tuning, the tuned model's evaluation resulted in the performance metrics below.
-```
-Accuracy: 0.9026239067055394 
-Precision: 0.8989023685730791 
-Recall: 0.9072886297376094 
-Confusion Matrix: 
-[[1556  159]
- [ 175 1540]]
+# Start the server
+python app.py
 ```
 
-### Data visualizations
-After data preprocessing is performed, data visualizations are created to represent the feature distribution, feature correlation, and feature importance. Since structural features are represented in binary and statistical features are represented numerically, a feature distribution plot and feature correlation matrix heatmap are created for each type of feature (structural/statistical), for each class (phishing/legitimate). A single feature importance plot is used to represent the influence of all selected features.
-</br>
-</br>
-**Feature Distribution**  
-The feature distribution for each type of feature (structural/statistical) for each class is represented in a stacked bar plot to identify the presence of each feature within the phishing vs. legitimate URLs. Using this visualization assists with understanding features that would be useful feature candidates for feature selection during improvement iterations. Features that appeared near 1:1 ratios (between phishing and legitimate URLs) were deselected during performance tuning iterations. These deselected features are commented out within the [app.py](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/app.py) file.
-![Statistical Feature Distribution example visualization](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/visualizations/transformed_dataset_statistical_feature_distribution.png)
+The backend starts on `http://localhost:5001`. On first launch it loads the Random Forest model and optionally downloads the DistilBERT NLP model (requires internet).
 
- 
-**Feature Correlation Matrix Heatmap**  
-The feature correlation matrix heatmap represents how closely correlated a structural feature is related to another structural feature and vice versa for statistical features. Hot areas on the matrix indicate a high correlation which suggests a strong linear relationship between two variables in which an increase in one variable will predictably increase the value of the highly correlated variable as well. When creating and tuning the model, this heatmap was useful to prune redundant features that were selected and minimize the noise for training the model.
-![Statistical Feature Correlation Matrix Heatmap example visualization](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/visualizations/transformed_dataset_statistical_feature_correlation.png)
+> **Note:** The system works without PyTorch/Transformers installed — it falls back to keyword-based heuristic analysis for NLP scoring.
 
-**Feature Importance**  
-The distribution of feature importance is illustrated in a ranked bar plot, where the selected features are represented on the Y-axis, and the weight of each feature (in relation to classification decisions) is represented on the X-axis. The highest-ranked features correlate to the most reliable features for the model to use when performing classification.
-![Feature Importance example visualization](https://github.com/Trieuh2/ml-url-phishing-classifier/blob/main/visualizations/url_feature_importance.png)
+### 2. Frontend Setup
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The dashboard opens at `http://localhost:5173` (Vite default).
+
+### 3. Chrome Extension Setup
+
+1. Open Chrome and navigate to `chrome://extensions/`
+2. Enable **Developer mode** (toggle in top-right)
+3. Click **Load unpacked** and select the `chrome-extension/` folder
+4. The KavachX shield icon appears in your toolbar
+5. (Optional) Click the extension icon → Settings → Enter your phone number for Vapi voice alerts
+
+---
+
+## Dashboard Tabs
+
+### URL Analysis
+- Enter a URL in the scanner to get a hybrid phishing risk score
+- View KPI metrics: Total Scans, Threats Detected, Safe URLs, Average Risk
+- Risk trend chart and threat distribution breakdown
+- Sortable activity log with detailed scan modals
+- Threat intelligence panel with feature-level explanations
+
+### Message Analysis
+- Paste a suspicious message, email, or SMS text
+- Detects urgency, credential harvesting, impersonation, financial scams, AI-generated content
+- Shows detected indicators with actionable recommendations
+- Full history with filterable activity log
+
+### Deepfake Detective
+- Upload video or audio files for deepfake analysis
+- Video analysis: frame-level manipulation scoring, face detection
+- Audio analysis: pitch stability, breath patterns, spectral flatness, frequency cutoff
+- Fusion scoring with configurable video/audio weights
+- Detailed modal with anomaly cards and key findings
+
+---
+
+## Chrome Extension Features
+
+### Automatic Page Protection
+The extension automatically analyzes every page you visit:
+- **Green badge** — Safe page
+- **Yellow badge** — Medium risk, warning banner displayed
+- **Red badge** — High risk, form guard activated
+
+### Form Guard
+When a page scores >= 70% phishing risk, the extension intercepts password form submissions and shows a full-screen confirmation overlay before allowing credentials to be entered.
+
+### Security Lock
+After a Vapi voice call confirms a high-risk page, a full-screen security lock overlay blocks all interaction with the page. Users can choose to go back to safety or bypass the lock.
+
+### Vapi Voice Alert
+When a URL scores >= 70%, the extension triggers an automated phone call via Vapi.ai to warn the user about the phishing threat in real time.
+
+---
+
+## ML Model Details
+
+### URL Classifier — Random Forest
+- **Algorithm**: Random Forest Classification (scikit-learn)
+- **Training data**: 11,430 URLs (50% phishing, 50% legitimate)
+- **Split**: 70% training, 30% testing
+- **Features**: 21 total (6 structural + 15 statistical)
+- **Performance**:
+  ```
+  Accuracy:  90.26%
+  Precision: 89.89%
+  Recall:    90.73%
+  ```
+- **Structural features**: IP address, HTTPS token, prefix/suffix, shortening service, domain brand match, suspicious TLD, statistical report
+- **Statistical features**: URL length, hostname length, path length, query length, number of dots/hyphens/underscores/slashes/query params, path-level/host-level word averages, character continuity
+
+### NLP Classifier — DistilBERT
+- **Model**: `cybersectony/phishing-email-detection-distilbert_v2.4.3` (HuggingFace)
+- **Task**: Binary text classification (phishing vs legitimate)
+- **Fallback**: Keyword-based heuristic scoring when the model is unavailable
+
+---
+
+## Data Source
+
+The URL training dataset is sourced from the open-source research by Abdelhakim Hannousse and Salima Yahiouche (2021): [Web page phishing detection](https://data.mendeley.com/datasets/c2gw7fy2j4/3) ([study](https://arxiv.org/abs/2010.12847)).
+
+---
+
+## Theme Support
+
+The dashboard supports both **dark mode** and **light mode**, togglable via the theme switch in the header. All components, charts, and modals adapt to the selected theme.
+
+---
+
+## License
+
+This project is for educational and research purposes.
 
 ## Acknowledgements
-The original raw dataset and main feature extraction logic were sourced from the [open-source repository](https://data.mendeley.com/datasets/c2gw7fy2j4/3) created as a result of a [study](https://arxiv.org/abs/2010.12847) performed by Abdelhakim Hannousse and Salima Yahiouche.
-#   K a v a c h X  
- 
+
+- URL dataset: [Hannousse & Yahiouche (2021)](https://data.mendeley.com/datasets/c2gw7fy2j4/3)
+- NLP model: [cybersectony/phishing-email-detection-distilbert](https://huggingface.co/cybersectony/phishing-email-detection-distilbert_v2.4.3)
+- Voice alerts: [Vapi.ai](https://vapi.ai)
