@@ -1,0 +1,15 @@
+# CodeShield ML — Python Dependencies
+
+# Core ML
+torch>=2.1.0
+transformers>=4.37.0
+datasets>=2.16.0
+scikit-learn>=1.4.0
+
+# ONNX export
+onnx>=1.15.0
+onnxruntime>=1.17.0
+
+# Utilities
+tqdm>=4.66.0
+numpy>=1.26.0

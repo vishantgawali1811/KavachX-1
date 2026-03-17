@@ -14,6 +14,7 @@
 
   "host_permissions": [
     "http://localhost:5001/*",
+    "https://api.vapi.ai/*",
     "<all_urls>"
   ],
 

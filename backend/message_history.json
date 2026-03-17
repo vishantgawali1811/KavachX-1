@@ -1,5 +1,118 @@
 [
   {
+    "id": "msg-944d1812-ba50-4045-8465-89b5b6640a71",
+    "type": "message",
+    "timestamp": "2026-03-17T00:56:16Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
+    "id": "msg-b895dba1-6f2f-4393-b4ae-db983b093978",
+    "type": "message",
+    "timestamp": "2026-03-17T00:56:07Z",
+    "risk_score": 0.0,
+    "risk_pct": 0,
+    "label": "legitimate",
+    "status": "Safe",
+    "reasons": [
+      "No strong phishing indicators detected"
+    ],
+    "indicators": {
+      "urgency": false,
+      "credential_request": false,
+      "suspicious_links": [],
+      "impersonation": false,
+      "financial_scam": false,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "This message appears legitimate. No immediate threat detected.",
+      "steps": [
+        "Message shows no strong phishing indicators",
+        "Standard safety practices still recommended"
+      ],
+      "severity": "safe"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.0,
+    "message_snippet": "{\"endpoints\":{\"GET /health\":\"Model status\",\"GET /history\":\"Scan history\",\"POST /analyze\":\"Upload vid...",
+    "full_message_length": 308
+  },
+  {
+    "id": "msg-c15e97f7-f78b-428e-84fa-6b0ba0d049f2",
+    "type": "message",
+    "timestamp": "2026-03-16T19:19:54Z",
+    "risk_score": 0.95,
+    "risk_pct": 95,
+    "label": "phishing",
+    "status": "Phishing",
+    "reasons": [
+      "Urgent language detected: 'urgent', 'immediately', 'your account has been'",
+      "Credential harvesting request: 'verify your', 'otp'",
+      "Financial scam indicators: 'refund'",
+      "Brand impersonation with urgency: 'paypal'"
+    ],
+    "indicators": {
+      "urgency": true,
+      "credential_request": true,
+      "suspicious_links": [],
+      "impersonation": true,
+      "financial_scam": true,
+      "ai_generated": false
+    },
+    "recommendation": {
+      "action": "Do NOT click any links or provide personal information.",
+      "steps": [
+        "Do not reply to this message",
+        "Do not click any links in the message",
+        "Do not provide any credentials or personal data",
+        "Report this message as phishing to your email provider",
+        "If you already shared credentials, change your passwords immediately",
+        "Verify by visiting the official website directly (type it yourself)"
+      ],
+      "severity": "critical"
+    },
+    "nlp_model_used": false,
+    "nlp_confidence": null,
+    "keyword_score": 0.95,
+    "message_snippet": "Subject: Urgent: PayPal Account Verification Required \u2013 Refund Pending From: PayPal Security Team se...",
+    "full_message_length": 1126
+  },
+  {
     "id": "msg-924a1541-a2e9-4948-a93d-6a8a4f691731",
     "type": "message",
     "timestamp": "2026-03-16T18:50:39Z",

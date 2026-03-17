@@ -1,4 +1,4 @@
-// popup.js — drives popup.html (URL scan + Message scan)
+// popup.js — drives popup.html (URL scan + Message scan + Sanitize)
 
 const API_URL  = 'http://localhost:5001/predict';
 const MSG_API  = 'http://localhost:5001/analyze-message';
@@ -14,19 +14,15 @@ const tabMsg   = document.getElementById('tab-msg');
 const panelUrl = document.getElementById('panel-url');
 const panelMsg = document.getElementById('panel-msg');
 
-tabUrl.addEventListener('click', () => {
-  tabUrl.classList.add('active');
-  tabMsg.classList.remove('active');
-  panelUrl.style.display = '';
-  panelMsg.style.display = 'none';
-});
+function switchTab(activeTab, activePanel) {
+  [tabUrl, tabMsg].forEach(t => t.classList.remove('active'));
+  [panelUrl, panelMsg].forEach(p => p.style.display = 'none');
+  activeTab.classList.add('active');
+  activePanel.style.display = '';
+}
 
-tabMsg.addEventListener('click', () => {
-  tabMsg.classList.add('active');
-  tabUrl.classList.remove('active');
-  panelMsg.style.display = '';
-  panelUrl.style.display = 'none';
-});
+tabUrl.addEventListener('click', () => switchTab(tabUrl, panelUrl));
+tabMsg.addEventListener('click', () => switchTab(tabMsg, panelMsg));
 
 // ═══════════════════════════════════════════════════════════════════════════
 // URL TAB — existing logic (preserved exactly)
@@ -206,6 +202,54 @@ btnClear.addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
+// SETTINGS — phone number for Vapi voice alerts
+// ═══════════════════════════════════════════════════════════════════════════
+const btnSettings   = document.getElementById('btn-settings');
+const panelSettings = document.getElementById('panel-settings');
+const inputPhone    = document.getElementById('input-phone');
+const btnSavePhone  = document.getElementById('btn-save-phone');
+const phoneStatus   = document.getElementById('phone-status');
+
+let settingsOpen = false;
+
+btnSettings.addEventListener('click', () => {
+  settingsOpen = !settingsOpen;
+  panelSettings.style.display = settingsOpen ? 'block' : 'none';
+  btnSettings.style.borderColor = settingsOpen ? '#3b82f6' : '';
+  btnSettings.style.color = settingsOpen ? '#60a5fa' : '';
+});
+
+// Load saved phone number
+chrome.storage.local.get('userPhone', ({ userPhone }) => {
+  if (userPhone) {
+    inputPhone.value = userPhone;
+    phoneStatus.textContent = '✓ Phone number configured';
+    phoneStatus.style.color = '#4ade80';
+  }
+});
+
+btnSavePhone.addEventListener('click', () => {
+  const phone = inputPhone.value.trim();
+  if (!phone) {
+    phoneStatus.textContent = '⚠ Please enter a phone number';
+    phoneStatus.style.color = '#fbbf24';
+    return;
+  }
+  // Basic validation: must start with + and contain digits
+  if (!/^\+\d{7,15}$/.test(phone.replace(/[\s\-()]/g, ''))) {
+    phoneStatus.textContent = '⚠ Enter a valid number with country code (e.g., +91XXXXXXXXXX)';
+    phoneStatus.style.color = '#fbbf24';
+    return;
+  }
+  chrome.storage.local.set({ userPhone: phone.replace(/[\s\-()]/g, '') }, () => {
+    phoneStatus.textContent = '✓ Phone number saved — voice alerts enabled';
+    phoneStatus.style.color = '#4ade80';
+    btnSavePhone.textContent = '✓ Saved';
+    setTimeout(() => { btnSavePhone.textContent = 'Save'; }, 1500);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // MESSAGE TAB — scans email body from current page (mirrors URL tab style)
 // ═══════════════════════════════════════════════════════════════════════════
 const msgStrip       = document.getElementById('msg-strip');
@@ -363,3 +407,4 @@ function setMsgBusy(on) {
     ? '<span class="spinner"></span> Scanning Email…'
     : 'Check This Email';
 }
+

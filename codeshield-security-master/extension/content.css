@@ -1,0 +1,418 @@
+/* CodeShield Content Script Styles */
+
+/* Warning Banner */
+.codeshield-warning {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  border: none;
+  border-radius: 8px;
+  margin: 8px 0;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  animation: codeshield-slideIn 0.3s ease-out;
+  z-index: 10000;
+  position: relative;
+}
+
+.codeshield-warning-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.codeshield-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.codeshield-text {
+  flex: 1;
+}
+
+.codeshield-view-btn,
+.codeshield-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.codeshield-view-btn:hover,
+.codeshield-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.codeshield-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 2px 6px;
+}
+
+/* ── Phase 2: XAI Confidence Bar ───────────────────────────── */
+.codeshield-xai {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.codeshield-conf-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.codeshield-conf-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.codeshield-conf-bar {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  transition: width 0.5s ease-out;
+}
+
+.codeshield-conf-pct {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* ── Phase 4: Feedback Buttons ──────────────────────────────── */
+.codeshield-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.codeshield-feedback-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.codeshield-fb-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 7px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.codeshield-fb-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.15);
+}
+
+.codeshield-fb-thanks {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Phase 4: Report Missed Secret Button */
+.codeshield-report-btn {
+  z-index: 2147483647;
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.codeshield-report-btn:hover {
+  background: #0f172a;
+  transform: translateX(-50%) translateY(-2px) !important;
+}
+
+
+/* Modal Overlay */
+.codeshield-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  animation: codeshield-fadeIn 0.2s ease-out;
+}
+
+.codeshield-modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: codeshield-slideUp 0.3s ease-out;
+}
+
+.codeshield-modal-header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.codeshield-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.codeshield-modal-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.codeshield-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.codeshield-modal-body {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.codeshield-secrets-list {
+  margin: 16px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.codeshield-secret-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.codeshield-secret-item:last-child {
+  border-bottom: none;
+}
+
+.codeshield-secret-type {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.codeshield-secret-value {
+  color: #666;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.codeshield-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.codeshield-redact-btn,
+.codeshield-restore-btn,
+.codeshield-ignore-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.codeshield-redact-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+}
+
+.codeshield-redact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.codeshield-restore-btn {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: white;
+}
+
+.codeshield-restore-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.codeshield-ignore-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.codeshield-ignore-btn:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Redacted Elements */
+.codeshield-redacted {
+  background: rgba(255, 193, 7, 0.25) !important;
+  border: 2px solid rgba(255, 193, 7, 0.6) !important;
+  color: inherit !important;
+  border-radius: 4px !important;
+  position: relative;
+}
+
+.codeshield-redacted::after {
+  content: "🛡️ Redacted by CodeShield";
+  position: absolute;
+  top: -25px;
+  right: 0;
+  background: #28a745;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes codeshield-slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes codeshield-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes codeshield-fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Site-specific adjustments */
+.chatgpt-input .codeshield-warning {
+  margin-bottom: 16px;
+}
+
+.claude-input .codeshield-warning {
+  margin: 8px 0;
+}
+
+.github-copilot .codeshield-warning {
+  margin: 4px 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .codeshield-modal-content {
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .codeshield-modal-body {
+    color: #e0e0e0;
+  }
+
+  .codeshield-secrets-list {
+    background: #2a2a2a;
+    border-color: #444;
+  }
+
+  .codeshield-secret-item {
+    border-color: #333;
+  }
+
+  .codeshield-secret-value {
+    background: #333;
+    color: #ccc;
+  }
+}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeShield Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="options-container">
+        <!-- Header -->
+        <header class="options-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🛡️</span>
+                    <span class="logo-text">CodeShield Settings</span>
+                </div>
+                <div class="version">v1.0.0</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="options-main">
+            <!-- Navigation Tabs -->
+            <nav class="options-nav">
+                <button class="nav-tab active" data-tab="general">General</button>
+                <button class="nav-tab" data-tab="protection">Protection</button>
+                <button class="nav-tab" data-tab="privacy">Privacy</button>
+                <button class="nav-tab" data-tab="advanced">Advanced</button>
+            </nav>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- General Tab -->
+                <section class="tab-pane active" id="general">
+                    <h2>General Settings</h2>
+                    
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="enabled" class="setting-checkbox">
+                            <span class="setting-text">Enable CodeShield</span>
+                        </label>
+                        <p class="setting-description">Turn secret detection on or off</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="showNotifications" class="setting-checkbox">
+                            <span class="setting-text">Show notifications</span>
+                        </label>
+                        <p class="setting-description">Display alerts when secrets are detected</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="darkMode" class="setting-checkbox">
+                            <span class="setting-text">Dark mode</span>
+                        </label>
+                        <p class="setting-description">Use dark theme for popup</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Language</span>
+                            <select id="language" class="setting-select">
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                                <option value="zh">中文</option>
+                            </select>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Protection Tab -->
+                <section class="tab-pane" id="protection">
+                    <h2>Protection Settings</h2>
+                    
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="autoRedact" class="setting-checkbox">
+                            <span class="setting-text">Auto-redact secrets</span>
+                        </label>
+                        <p class="setting-description">Automatically replace detected secrets with placeholders</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="showWarnings" class="setting-checkbox">
+                            <span class="setting-text">Show warning banners</span>
+                        </label>
+                        <p class="setting-description">Display warning messages when secrets are found</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="scanOnPaste" class="setting-checkbox">
+                            <span class="setting-text">Scan on paste</span>
+                        </label>
+                        <p class="setting-description">Automatically scan content when pasted</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Protection Level</span>
+                            <select id="protectionLevel" class="setting-select">
+                                <option value="low">Low - Scan only</option>
+                                <option value="medium">Medium - Scan + Warnings</option>
+                                <option value="high">High - Full Protection</option>
+                            </select>
+                        </label>
+                        <p class="setting-description">Choose how aggressive the protection should be</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Scan Sensitivity</span>
+                            <div class="slider-container">
+                                <input type="range" id="sensitivity" class="setting-slider" min="1" max="5" value="3">
+                                <div class="slider-labels">
+                                    <span>Low</span>
+                                    <span>Medium</span>
+                                    <span>High</span>
+                                </div>
+                            </div>
+                        </label>
+                        <p class="setting-description">Adjust sensitivity for secret detection</p>
+                    </div>
+                </section>
+
+                <!-- Privacy Tab -->
+                <section class="tab-pane" id="privacy">
+                    <h2>Privacy Settings</h2>
+                    
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="analytics" class="setting-checkbox">
+                            <span class="setting-text">Share anonymous analytics</span>
+                        </label>
+                        <p class="setting-description">Help improve CodeShield by sharing usage data</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="crashReports" class="setting-checkbox">
+                            <span class="setting-text">Send crash reports</span>
+                        </label>
+                        <p class="setting-description">Automatically report errors to help fix bugs</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Data Retention</span>
+                            <select id="dataRetention" class="setting-select">
+                                <option value="1">1 day</option>
+                                <option value="7">7 days</option>
+                                <option value="30">30 days</option>
+                                <option value="never">Never</option>
+                            </select>
+                        </label>
+                        <p class="setting-description">How long to keep scan history</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <button class="btn btn-danger" id="clearData">Clear All Data</button>
+                        <p class="setting-description">Remove all stored data and reset settings</p>
+                    </div>
+                </section>
+
+                <!-- Advanced Tab -->
+                <section class="tab-pane" id="advanced">
+                    <h2>Advanced Settings</h2>
+                    
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Debug Mode</span>
+                            <input type="checkbox" id="debugMode" class="setting-checkbox">
+                        </label>
+                        <p class="setting-description">Enable detailed logging for troubleshooting</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Custom Patterns</span>
+                            <textarea id="customPatterns" class="setting-textarea" rows="4" placeholder="Enter custom regex patterns (one per line)"></textarea>
+                        </label>
+                        <p class="setting-description">Add your own secret detection patterns</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <span class="setting-text">Excluded Sites</span>
+                            <textarea id="excludedSites" class="setting-textarea" rows="4" placeholder="Enter sites to exclude (one per line)"></textarea>
+                        </label>
+                        <p class="setting-description">Sites where CodeShield won't run</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>Data Management</h3>
+                        <div class="button-group">
+                            <button class="btn btn-secondary" id="exportData">Export Data</button>
+                            <button class="btn btn-secondary" id="importData">Import Data</button>
+                            <input type="file" id="importFile" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="options-actions">
+                <button class="btn btn-primary" id="saveSettings">Save Settings</button>
+                <button class="btn btn-secondary" id="resetSettings">Reset to Defaults</button>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="options-footer">
+            <div class="footer-links">
+                <a href="#" id="documentation">Documentation</a>
+                <a href="#" id="support">Support</a>
+                <a href="#" id="github">GitHub</a>
+            </div>
+            <div class="footer-info">
+                Made with ❤️ for secure AI development
+            </div>
+        </footer>
+    </div>
+
+    <!-- Status Messages -->
+    <div class="status-message" id="statusMessage" style="display: none;"></div>
+
+    <script src="options.js"></script>
+</body>
+</html>
